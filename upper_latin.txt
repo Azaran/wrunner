@@ -1,0 +1,5 @@
+<CharSet>
+<Description>Uppercase latin letters (A-Z)</Description>
+<Type>ASCII</Type>
+<Chars>ABCDEFGHIJKLMNOPQRSTUVWXYZ</Chars>
+</CharSet>

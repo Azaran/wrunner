@@ -1,0 +1,5 @@
+<CharSet>
+<Description>Lowercase latin letters (a-z)</Description>
+<Type>ASCII</Type>
+<Chars>abcdefghijklmnopqrstuvwxyz</Chars>
+</CharSet>
