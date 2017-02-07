@@ -23,7 +23,6 @@
 #ifndef WRUNNER_H
 #define	WRUNNER_H
 
-
 #ifdef __WIN32 // WINDOWS --------------------------------------
 const char *Wrathion_path = "wrathion.exe";
 #pragma warning( disable : 4800 ) // stupid warning about bool
@@ -32,8 +31,25 @@ HANDLE g_hChildStd_OUT_Rd = NULL;
 HANDLE g_hChildStd_OUT_Wr = NULL;
 HANDLE g_hChildStd_ERR_Rd = NULL;
 HANDLE g_hChildStd_ERR_Wr = NULL;
+
+/**
+ * @brief   Creates child process with given name
+ *
+ * @param proc_name
+ *
+ * @return  PROCESS_INFORMATION
+ */
 PROCESS_INFORMATION CreateChildProcess(std::string proc_name);
+
+/**
+ * @brief   Reads standard outputs of the given process
+ *
+ * @param piProcInfo
+ *
+ * @return  content of STDOUT 
+ */
 std::string ReadFromPipe(PROCESS_INFORMATION piProcInfo);
+
 #else // ------- GNU/Linux -------------------------------------
     const char *Wrathion_path = "fitcrack41";
 #endif

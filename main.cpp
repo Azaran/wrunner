@@ -1,7 +1,8 @@
+
 /*
  * Wrathion runner for BOINC client for dictionary-based version
  *
- * Copyright (C) 2016 Radek Hranicky
+ * Copyright (C) 2016 Radek Hranicky, 2017 Vojtech Vecera
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy 
  * of this software and associated documentation files (the "Software"), to deal 
@@ -58,15 +59,24 @@
 #include "socket.h"
 #include "standalone.h"
 
+#define PATH_TO_CRACKER "fitcrack0"
+#define FILE_SEARCH_KEY "fitcrack"
+#define KERNELS_ARCHIVE "kernels6.zip"
+
 using namespace std;
 using std::string;
 using boost::asio::ip::tcp;
 
 bool boinc = false;
 
+/**
+ * @brief   Find cracking tool's execution file in the directory 
+ * @param path
+ * @return    Path to cracker
+ */
 string find_exec_file(string path) {
     //cerr << "main.cpp " << __LINE__ << " find_exec_file(begin) -" << endl;
-    string fitcrackerPath = "fitcrack0";
+    string crackerPath = PATH_TO_CRACKER;
     string file;
     DIR *dir = opendir(path.c_str()); 
     if(dir)
@@ -75,18 +85,22 @@ string find_exec_file(string path) {
         while((ent = readdir(dir)) != NULL) 
         {
             file = ent->d_name;
-            if(file != "fitcrack" && file.find("fitcrack") != std::string::npos) {
+            if(file != FILE_SEARCH_KEY && file.find(FILE_SEARCH_KEY) != std::string::npos) {
                 if(boost::lexical_cast<int>(file.substr(8, file.length() - 8)) - \
-                    boost::lexical_cast<int>(fitcrackerPath.substr(8, fitcrackerPath.length() - 8)) > 0) {
-                    fitcrackerPath = file;
+                    boost::lexical_cast<int>(crackerPath.substr(8, crackerPath.length() - 8)) > 0) {
+                    crackerPath = file;
                 }
             }
         } 
     }
-    //cerr << "main.cpp " << __LINE__ << " find_exec_file() -" << fitcrackerPath << endl;
-    return fitcrackerPath;
+    //cerr << "main.cpp " << __LINE__ << " find_exec_file() -" << crackerPath << endl;
+    return crackerPath;
 }
 
+/**
+ * @brief   Prints parameters of with which is the child run
+ * @param args
+ */
 void print_secondary_process_params(char ** args) {
     int i = 0;
     cerr << "./";
@@ -97,8 +111,11 @@ void print_secondary_process_params(char ** args) {
     cerr << endl;
 }
 
-static void safe_create_dir(const char *dir)
-{
+/**
+ * @brief   Creates new directory with privileges 0755 (safely)
+ * @param dir
+ */
+static void safe_create_dir(const char *dir) {
     if (mkdir(dir, 0755) < 0) {
         if (errno != EEXIST) {
             perror(dir);
@@ -107,8 +124,13 @@ static void safe_create_dir(const char *dir)
     }
 }
 
-int zip_extract(char *archive)
-{
+/**
+ * @brief   Extracts ZIP archive with OCL kernels
+ * @param archive
+ * @return    0 - when everything when OK
+ *	      1 - when there was some reading or opening / closing issue
+ */
+int zip_extract(char *archive) {
     struct zip *za;
     struct zip_file *zf;
     struct zip_stat sb;
@@ -129,6 +151,7 @@ int zip_extract(char *archive)
     for (i = 0; i < zip_get_num_entries(za, 0); i++) {
         if (zip_stat_index(za, i, 0, &sb) == 0) {
             
+	    /*** Creates  directory tree from ZIP */
             pch = strchr((char *)sb.name, '/');
             while(pch != NULL)
             {
@@ -175,43 +198,57 @@ int zip_extract(char *archive)
     return 0;
 }
 
+/**
+ * @brief   Check if file with given name exists.
+ * @param name
+ * @return  true
+ *	    false
+ */
 inline bool file_exists (const std::string& name) {
   struct stat buffer;   
   return (stat (name.c_str(), &buffer) == 0); 
 }
 
+/**
+ * @brief   Main function of Runner
+ * @param argc
+ * @param argv
+ * @return  0
+ *	    piProcInfo
+ */
 int main(int argc, char **argv) {
     int retval;
     char buf[256];
     MFILE out;
     std::string password = "";
-	string xmlFile;
-    
+    string xmlFile;
+
+    /** TODO: examine what this does and comment it */
     params_init();
     standalone(argc, argv, &xmlFile);
     if(task_params.mode == 'u') {
-		boinc = true;
-	}
-    
-	if(boinc) {
-		retval = boinc_init();
-        //cerr << "main.cpp " << __LINE__ << " boinc_init()" << endl;
-        zip_extract("kernels6.zip");
-	}
-    if (retval) {
-        fprintf(stderr, "%s boinc_init returned %d\n",
-            boinc_msg_prefix(buf, sizeof(buf)), retval
-        );
-        exit(retval);
+	boinc = true;
     }
-    
+
+    if(boinc) {
+	retval = boinc_init();
+	//cerr << "main.cpp " << __LINE__ << " boinc_init()" << endl;
+	zip_extract(KERNELS_ARCHIVE);
+    }
+    if (retval) {
+	fprintf(stderr, "%s boinc_init returned %d\n",
+		boinc_msg_prefix(buf, sizeof(buf)), retval
+	       );
+	exit(retval);
+    }
+
     //cerr << "main.cpp " << __LINE__ << endl;
     if(boinc) {
-		//cerr << "main.cpp " << __LINE__ << endl;
-		getTaskParams(resolveInputFile("in"));
-		//cerr << "main.cpp " << __LINE__ << endl;
-		xmlFile = resolveInputFile("data");
-	}
+	//cerr << "main.cpp " << __LINE__ << endl;
+	getTaskParams(resolveInputFile("in"));
+	//cerr << "main.cpp " << __LINE__ << endl;
+	xmlFile = resolveInputFile("data");
+    }
     
     cerr << "Runner is running with parameters:" << endl;
     cerr << "mode - " << task_params.mode << endl;
