@@ -214,7 +214,6 @@ inline bool file_exists (const std::string& name) {
  * @param argc
  * @param argv
  * @return  0
- *	    piProcInfo
  */
 int main(int argc, char **argv) {
     int retval;
@@ -223,18 +222,27 @@ int main(int argc, char **argv) {
     std::string password = "";
     string xmlFile;
 
-    /** TODO: examine what this does and comment it */
+    /**
+     * @brief   Initializes and sets task_params based on xmlFile
+     */
     params_init();
     standalone(argc, argv, &xmlFile);
     if(task_params.mode == 'u') {
 	boinc = true;
     }
 
+    /**
+     * @brief   On mode 'u' initiliaze boinc and extract ZIP with OCL kernels
+     */
     if(boinc) {
 	retval = boinc_init();
 	//cerr << "main.cpp " << __LINE__ << " boinc_init()" << endl;
 	zip_extract(KERNELS_ARCHIVE);
     }
+    
+    /**
+     * @brief   On boinc_init error print error on STDERR
+     */
     if (retval) {
 	fprintf(stderr, "%s boinc_init returned %d\n",
 		boinc_msg_prefix(buf, sizeof(buf)), retval
@@ -242,6 +250,9 @@ int main(int argc, char **argv) {
 	exit(retval);
     }
 
+    /**
+     * @brief   Read information from files sent by server about task
+     */
     //cerr << "main.cpp " << __LINE__ << endl;
     if(boinc) {
 	//cerr << "main.cpp " << __LINE__ << endl;
@@ -259,6 +270,7 @@ int main(int argc, char **argv) {
     cerr << "charset - " << task_params.charset << endl;
     cerr << "length - " << task_params.length << endl << endl;
     
+    /// TODO: What is the 'u' mode?
     if(task_params.mode == 'u') {
         printf("./wrunner\n");
         printf("1. (benchmark) -m b -c lower_lattin.txt -x test.xml\n");
@@ -266,18 +278,21 @@ int main(int argc, char **argv) {
         printf("3. (verify) -m v -c lower_lattin.txt -p heslo-base64 -x test.xml\n");
         return 0;
     }
-    
+
     //cerr << "main.cpp " << __LINE__ << endl;
     Server s(gio_service);
     //cerr << "main.cpp " << __LINE__ << endl;
     cerr << "Port " << s.listeningPort << endl;
     
-    /* ****** Run Wrathion ****** */
-    string fitcrackerPath = find_exec_file(".");
-    chmod(fitcrackerPath.c_str(), S_IRWXU); //S_IRGRP|S_IXGRP|S_IROTH
+    /**
+     * @brief   Run Wrathion
+     */
+    string crackerPath = find_exec_file(".");
+    chmod(crackerPath.c_str(), S_IRWXU); //S_IRGRP|S_IXGRP|S_IROTH
     
     
 #ifdef __WIN32
+    /// TODO: Needs corrections or rework to work under windows
     cerr << "Windows sucks" << endl;
     /*
     std::string wrathion_win = "fitcracker.exe -m BOINC";
@@ -334,10 +349,11 @@ int main(int argc, char **argv) {
     pipe(pipefd);
     pid=fork();
     if (pid==0) { // child (Wrathion) process
+#define PATH2OCLCONFIG "../../opencl.config"
 		
         std::string openclConfig1 = "";
         std::string openclConfig2 = "";
-        if(file_exists("../../opencl.config")) {
+    if(file_exists(PATH2OCLCONFIG)) {
             openclConfig1 = "--opencl-set";
             std::ifstream ifs("../../opencl.config");
             openclConfig2.assign( (std::istreambuf_iterator<char>(ifs) ), (std::istreambuf_iterator<char>() ) );
@@ -350,7 +366,7 @@ int main(int argc, char **argv) {
         port << s.listeningPort;
         
         //cerr << "main.cpp " << __LINE__ << endl;
-        char * arg_bin = const_cast<char*>(fitcrackerPath.c_str());
+        char * arg_bin = const_cast<char*>(crackerPath.c_str());
         char * arg_xmlFile = const_cast<char*>(xmlFile.c_str());
         
         std::stringstream ss1, ss2;
@@ -381,15 +397,15 @@ int main(int argc, char **argv) {
         int result = 0;
         if(task_params.mode == 'n') {
             print_secondary_process_params(argsN);
-            execv(fitcrackerPath.c_str(), argsN);
+            execv(crackerPath.c_str(), argsN);
         }
         else if(task_params.mode == 'v') {
             print_secondary_process_params(argsV);
-            execv(fitcrackerPath.c_str(), argsV);
+            execv(crackerPath.c_str(), argsV);
         }
         else if(task_params.mode == 'b') {
             print_secondary_process_params(argsB);
-            result = execv(fitcrackerPath.c_str(), argsB);
+            result = execv(crackerPath.c_str(), argsB);
         }
         if( result != 0 )
          {
@@ -445,6 +461,11 @@ int main(int argc, char **argv) {
 #ifdef __WIN32
 // Create a child process that uses the previously created pipes
 //  for STDERR and STDOUT.
+/**
+ * @brief   Creates a child process with given process name
+ * @param proc_name
+ * @return  PROCESS_INFORMATION
+ */
 PROCESS_INFORMATION CreateChildProcess(std::string proc_name){
     // Set the text I want to run
     //char szCmdline[]="test --log_level=all --report_level=detailed";

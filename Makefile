@@ -1,6 +1,6 @@
 # This should work on Linux.  Modify as needed for other platforms.
 
-BOINC_DIR = ../boinc-src
+BOINC_DIR = '/usr/include/boinc'
 BOINC_API_DIR = $(BOINC_DIR)/api
 BOINC_LIB_DIR = $(BOINC_DIR)/lib
 
@@ -53,6 +53,6 @@ simulation.o: simulation.cpp
 main.o: main.cpp
 	$(CXX) $(CXXFLAGS) -c main.cpp -Wno-write-strings
 
-wrunner: resolver.o parser.o socket.o control.o standalone.o simulation.o main.o $(BOINC_API_DIR)/libboinc_api.a $(BOINC_LIB_DIR)/libboinc.a
+wrunner: resolver.o parser.o socket.o control.o standalone.o simulation.o main.o libboinc_api.a libboinc.a
 	$(CXX) $(CXXFLAGS) -o wrunner resolver.o parser.o socket.o control.o standalone.o simulation.o main.o -pthread -lboinc_api -lboinc -lboost_system -lboost_thread -lzip -lz -static-libgcc -static-libstdc++ -static
 
