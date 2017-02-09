@@ -105,7 +105,6 @@ inline bool file_exists (const std::string& name);
  * @return  0
  */
 int main(int argc, char **argv);
-}
 
 #ifdef __WIN32 // WINDOWS --------------------------------------
 //const char *Wrathion_path = "wrathion.exe";
