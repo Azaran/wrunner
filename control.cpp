@@ -29,17 +29,20 @@ string generate_output_content() {
     //cerr << "control.cpp:" << __LINE__ << endl;
     cerr << "control.cpp:" << __LINE__ << " totaltime:" << totaltime << ", avgSpeed:"<< avgSpeed << ", pwcount" << pwcount << endl;
     string result = "";
-    
+
+    /**
+     * @brief Benchmark mode
+     */
     if(task_params.mode == 'b') {
         if(avgSpeed) {
             result = "b\n0\n";
-            std::stringstream ss1;
+            stringstream ss1;
             ss1 << avgSpeed;
             result += ss1.str() + "\n";
-            std::stringstream ss2;
+            stringstream ss2;
             ss2 << pwcount;
             result += ss2.str() + "\n";
-            std::stringstream ss3;
+            stringstream ss3;
             ss3 << totaltime;
             result += ss3.str() + "\n";
         }
@@ -47,25 +50,33 @@ string generate_output_content() {
             result = "b\n2\n" + errorText + "\n";
         }
     }
+
+    /**
+     * @brief Normal mode
+     */
     else if(task_params.mode == 'n') {
         if(errorText.length()) {
             result = "n\n2\n" + errorText + "\n";
         }
         else if(password.length()) {
             result = "n\n0\n" + password + "\n";
-            std::stringstream ss;
+            stringstream ss;
             ss << totaltime;
             result += ss.str() + "\n";
         }
         else {
             result = "n\n1\n";
-            std::stringstream ss;
+            stringstream ss;
             ss << totaltime;
             result += ss.str() + "\n";
         }
     }
+
+    /**
+     * @brief Validation mode
+     */
     else if(task_params.mode == 'v') {
-        std::stringstream ss;
+        stringstream ss;
         ss << totaltime;
         if(errorText.length()) {
             result = "v\n2\n" + errorText + "\n";
@@ -106,6 +117,7 @@ void create_output_file(bool boinc) {
     
 }
 
+//TODO: Im bit unsure about the math here and about it is supposed to do.
 int heartbeat_diff() {
     return counter >= lastHeartbeat ? counter - lastHeartbeat: COUNTERMAX - lastHeartbeat + counter;
 }
@@ -114,46 +126,62 @@ void control_main(class Session * session) {
     //cerr << "control.cpp:" << __LINE__ << " control_main()" << endl;
     BOINC_STATUS status;
     
-    // kontrola PID
+    /**
+     * @brief	PID check to determine whether the process is still alive.
+     */
     if (0 != kill(pid, 0)) {
-        //cerr << "control.cpp:" << __LINE__ << " kontrola PID" << endl;
+        //cerr << "control.cpp:" << __LINE__ << " PID check" << endl;
         //create_output_file("process not alive", false, "");
         errorText = "process not alive";
         gio_service.stop();
     }
     
-    // kontrola heartbeatu
+    /**
+     * @brief Heartbeat check to determine whether the process is responding.
+     */
     if(heartbeat_diff() > HEARTBEATMAX) {
-        //cerr << "control.cpp:" << __LINE__ << " kontrola heartbeatu" << endl;
+        //cerr << "control.cpp:" << __LINE__ << " heartbeat check" << endl;
         kill(pid, SIGTERM);
         //create_output_file("process not responding", false, "");
         errorText = "process not responding";
         gio_service.stop();
     }
     
-    // kontrola absolutny timeout pri benchmarku
+    /**
+     * @brief	Absolute timeout check for benchmark
+     */
     if(task_params.mode == 'b' && counter == BENCHMARK_TIMEOUT) {
-        cerr << "control.cpp:" << __LINE__ << " absolutny timeout" << endl;
+        cerr << "control.cpp:" << __LINE__ << " absolute timeout" << endl;
         //cerr << "lastHeartbeat=" << lastHeartbeat << endl;
-        avgSpeed = 0; // informacia ze benchmark nebol uspesny
+
+	/**
+	 * @brief   Bechmark wasn't successful
+	 */
+        avgSpeed = 0; // 
         //create_output_file("timeout", false, "");
         errorText = "timeout";
         gio_service.stop();
     }
     
-    // inicializacne nastaveni
+    /**
+     * @brief   Initialization settings
+     */
     if(counter == -1) {
         cerr << "> heartbeat;5" << endl;
         Session::send_line(session, "heartbeat;5\n");
         
-        // nastaveni z BOINC manazeru
+	/**
+	 * @brief   Setup of BOINC manager
+	 */
         boinc_get_status(&status);
         lastPause = status.suspended;
         lastStop = status.quit_request + status.abort_request;
     }
     else {
         //cerr << "control.cpp:" << __LINE__ << " kontrola PID" << endl;
-        // pravidelna udalost kazdych 5s
+	/**
+	 * @brief   Period event every 5 seconds.
+	 */
         if(counter % 5 == 4) {
             //cerr << "control.cpp:" << __LINE__ << endl;
             //cerr << "> status" << endl;
@@ -161,10 +189,10 @@ void control_main(class Session * session) {
         } 
     }
     
-    // nastaveni z BOINC manazeru
+    /**
+     * @brief   Get status of the task from BOINC manager.
+     */
     boinc_get_status(&status);
-    
-    
     
     if( (lastPause > 0 && status.suspended == 0 ) || (lastStop > 0 && status.quit_request + status.abort_request == 0)) {
         Session::send_line(session, "resume\n");
@@ -178,11 +206,9 @@ void control_main(class Session * session) {
     lastPause = status.suspended;
     lastStop = status.quit_request + status.abort_request;
     
-    
     string simulationMessage = simulation(task_params.simulation, counter);
     if(simulationMessage != "")
         Session::send_line(session, simulationMessage);
-    
     
     counter++;
     
@@ -196,20 +222,20 @@ void parse_message(string message, string * part1, string * part2, string * part
     
     index = 0;
     //cerr << "% index=" << index << endl;
-    delimeter = message.find(';', index);
+    delimeter = message.find(DIVIDER, index);
     //cerr << "% delimeter=" << delimeter << endl;
     if(delimeter != string::npos) {
         *part1 = message.substr(index, delimeter - index);
         //cerr << "% part1=" << *part1 << endl;
         
         index = delimeter + 1;
-        delimeter = message.find(';', index);
+        delimeter = message.find(DIVIDER, index);
         if(delimeter != string::npos) {
             *part2 = message.substr(index, delimeter - index);
             //cerr << "% part2=" << *part2 << endl;
             
             index = delimeter + 1;
-            delimeter = message.find(';', index);
+            delimeter = message.find(DIVIDER, index);
             if(delimeter != string::npos) {
                 *part3 = message.substr(index, delimeter - index);
                 //cerr << "% part3=" << *part3 << endl;
@@ -230,62 +256,10 @@ void parse_message(string message, string * part1, string * part2, string * part
     }
 }
 
-void parse_message2(string message, string * part1, string * part2, string * part3) {
-    size_t delimeter1, delimeter2, delimeter3;
-    int index, n, begin;
-    
-    n = std::count(message.begin(), message.end(), ';');
-    //cerr << "% n=" << n << endl;
-    
-    iterator_range<string::iterator> r = find_nth(message, ";", n-4);
-    begin = distance(message.begin(), r.begin());
-    begin = 0;
-    //cerr << "% begin=" << begin << endl;
-    
-    index = begin + 1;
-    //cerr << "% index=" << index << endl;
-    delimeter1 = message.find(';', index);
-    //cerr << "% delimeter1=" << delimeter1 << endl;
-    if(delimeter1 != string::npos) {
-        *part1 = message.substr(index, delimeter1 - index);
-        //cerr << "% part1=" << *part1 << endl;
-    }
-    else {
-        *part1 = message;
-    }
-    //cerr << "%" << endl;
-    
-    index = delimeter1 + 1;
-    //cerr << "% index=" << index << endl;
-    delimeter2 = message.find(';', index);
-    //cerr << "% delimeter2=" << delimeter2 << endl;
-    if(delimeter2 != string::npos) {
-        *part2 = message.substr(index, delimeter2 - index);
-        //cerr << "% part2=" << *part2 << endl;
-    }
-    else {
-        *part2 = message;
-    }
-    //cerr << "%" << endl;
-    
-    index = delimeter2 + 1;
-    //cerr << "% index=" << index << endl;
-    delimeter3 = message.find(';', index);
-    //cerr << "% delimeter3=" << delimeter3 << endl;
-    if(delimeter3 != string::npos) {
-        *part3 = message.substr(index, delimeter3 - index);
-        //cerr << "% part3=" << *part3 << endl;
-    }
-    else {
-        *part3 = message;
-    }
-    
-}
-
 void parse_message_simple(string message, string * part1, string * part2) {
     size_t delimeter1, delimeter2;
     
-    delimeter1 = message.find(';', 0);
+    delimeter1 = message.find(DIVIDER, 0);
     if(delimeter1 != string::npos) {
         *part1 = message.substr(0, delimeter1);
     }
@@ -293,7 +267,7 @@ void parse_message_simple(string message, string * part1, string * part2) {
         *part1 = message;
     }
     
-    delimeter2 = message.find(';', delimeter1 + 1);
+    delimeter2 = message.find(DIVIDER, delimeter1 + 1);
     if(delimeter2 != string::npos) {
         *part2 = message.substr(delimeter1 + 1, delimeter2 - (delimeter1 + 1));
     }
@@ -302,29 +276,6 @@ void parse_message_simple(string message, string * part1, string * part2) {
     }
 }
 
-/*
-void parse_message(string message, string * part1, string * part2, string * part3) {
-    size_t delimeter1, delimeter2;
-    
-    delimeter1 = message.find(';', 0);
-    if(delimeter1 != string::npos) {
-        *part1 = message.substr(0, delimeter1);
-    }
-    else {
-        *part1 = message;
-    }
-    
-    delimeter2 = message.find(';', delimeter1 + 1);
-    if(delimeter2 != string::npos) {
-        *part2 = message.substr(delimeter1 + 1, delimeter2 - (delimeter1 + 1));
-        *part3 = message.substr(delimeter2 + 1, message.length() - (delimeter2 + 1));
-    }
-    else {
-        *part2 = message.substr(delimeter1 + 1, message.length() - (delimeter1 + 1));
-        *part3 = "";
-    }
-}
-*/
 void control_read(string message) {
     //cerr << "control.cpp:" << __LINE__ << " " << message << endl;
     //cerr << "<message: " << message << "(" << message.length() << ")" << endl;
@@ -335,6 +286,10 @@ void control_read(string message) {
     
     //cerr << "<parts: " << part1 << " " << part2 << " " << part3 << endl;
     
+    
+    /**
+     * @brief   Updates information about task when it receives specified messages.
+     */
     if(part1 == "heartbeat") {
         ///cerr << "control.cpp" << __LINE__ << endl;
         lastHeartbeat = counter;
@@ -387,6 +342,81 @@ void control_read(string message) {
         totaltime = boost::lexical_cast<double>(part2);
         //create_output_file("", false, "");
     }
-    
-    
 }
+
+/*
+void parse_message2(string message, string * part1, string * part2, string * part3) {
+    size_t delimeter1, delimeter2, delimeter3;
+    int index, n, begin;
+    
+    n = std::count(message.begin(), message.end(), DIVIDER);
+    //cerr << "% n=" << n << endl;
+    
+    iterator_range<string::iterator> r = find_nth(message, ";", n-4);
+    begin = distance(message.begin(), r.begin());
+    begin = 0;
+    //cerr << "% begin=" << begin << endl;
+    
+    index = begin + 1;
+    //cerr << "% index=" << index << endl;
+    delimeter1 = message.find(DIVIDER, index);
+    //cerr << "% delimeter1=" << delimeter1 << endl;
+    if(delimeter1 != string::npos) {
+        *part1 = message.substr(index, delimeter1 - index);
+        //cerr << "% part1=" << *part1 << endl;
+    }
+    else {
+        *part1 = message;
+    }
+    //cerr << "%" << endl;
+    
+    index = delimeter1 + 1;
+    //cerr << "% index=" << index << endl;
+    delimeter2 = message.find(DIVIDER, index);
+    //cerr << "% delimeter2=" << delimeter2 << endl;
+    if(delimeter2 != string::npos) {
+        *part2 = message.substr(index, delimeter2 - index);
+        //cerr << "% part2=" << *part2 << endl;
+    }
+    else {
+        *part2 = message;
+    }
+    //cerr << "%" << endl;
+    
+    index = delimeter2 + 1;
+    //cerr << "% index=" << index << endl;
+    delimeter3 = message.find(DIVIDER, index);
+    //cerr << "% delimeter3=" << delimeter3 << endl;
+    if(delimeter3 != string::npos) {
+        *part3 = message.substr(index, delimeter3 - index);
+        //cerr << "% part3=" << *part3 << endl;
+    }
+    else {
+        *part3 = message;
+    }
+}
+*/
+
+/*
+void parse_message(string message, string * part1, string * part2, string * part3) {
+    size_t delimeter1, delimeter2;
+    
+    delimeter1 = message.find(';', 0);
+    if(delimeter1 != string::npos) {
+        *part1 = message.substr(0, delimeter1);
+    }
+    else {
+        *part1 = message;
+    }
+    
+    delimeter2 = message.find(';', delimeter1 + 1);
+    if(delimeter2 != string::npos) {
+        *part2 = message.substr(delimeter1 + 1, delimeter2 - (delimeter1 + 1));
+        *part3 = message.substr(delimeter2 + 1, message.length() - (delimeter2 + 1));
+    }
+    else {
+        *part2 = message.substr(delimeter1 + 1, message.length() - (delimeter1 + 1));
+        *part3 = "";
+    }
+}
+*/
