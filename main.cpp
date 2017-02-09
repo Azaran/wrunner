@@ -59,6 +59,7 @@
 #include "socket.h"
 #include "standalone.h"
 
+#define PATH_TO_OCLCONFIG "../../opencl.config"
 #define PATH_TO_CRACKER "fitcrack0"
 #define FILE_SEARCH_KEY "fitcrack"
 #define KERNELS_ARCHIVE "kernels6.zip"
@@ -72,7 +73,7 @@ bool boinc = false;
 /**
  * @brief   Find cracking tool's execution file in the directory 
  * @param path
- * @return    Path to cracker
+ * @return    crackerPath
  */
 string find_exec_file(string path) {
     //cerr << "main.cpp " << __LINE__ << " find_exec_file(begin) -" << endl;
@@ -344,27 +345,36 @@ int main(int argc, char **argv) {
 
     printf("\n->End of parent execution.\n");
     */
+//end of __WIN32
 #else
     int pipefd[2];
     pipe(pipefd);
     pid=fork();
-    if (pid==0) { // child (Wrathion) process
-#define PATH2OCLCONFIG "../../opencl.config"
+    if (pid==0) { /// child (cracking tool) process
 		
+      /**
+       * @brief  Sets OCL configs 
+       */
         std::string openclConfig1 = "";
         std::string openclConfig2 = "";
-    if(file_exists(PATH2OCLCONFIG)) {
+	if(file_exists(PATH_TO_OCLCONFIG)) {
             openclConfig1 = "--opencl-set";
-            std::ifstream ifs("../../opencl.config");
+            std::ifstream ifs(PATH_TO_OCLCONFIG);
             openclConfig2.assign( (std::istreambuf_iterator<char>(ifs) ), (std::istreambuf_iterator<char>() ) );
             openclConfig2.erase(std::find_if(openclConfig2.rbegin(), openclConfig2.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), openclConfig2.end());
             fprintf(stderr, ">>>>>>>>>>>>>>%s\n", openclConfig2.c_str());
             openclConfig2 = "0:" + openclConfig2;
         }
                      
+	/**
+	 * @brief  Sets listening port of the server to the tool
+	 */
         std::stringstream port;
         port << s.listeningPort;
         
+	/**
+	 * @brief  Sets what tool should we run and with what parameters
+	 */
         //cerr << "main.cpp " << __LINE__ << endl;
         char * arg_bin = const_cast<char*>(crackerPath.c_str());
         char * arg_xmlFile = const_cast<char*>(xmlFile.c_str());
@@ -393,6 +403,9 @@ int main(int argc, char **argv) {
         close(pipefd[1]);    // this descriptor is no longer needed
         
         
+	/**
+	 * @brief  Prints parameters and name of the binary file which we want to execute
+	 */
         //cerr << "main.cpp " << __LINE__ << endl;
         int result = 0;
         if(task_params.mode == 'n') {
@@ -407,6 +420,10 @@ int main(int argc, char **argv) {
             print_secondary_process_params(argsB);
             result = execv(crackerPath.c_str(), argsB);
         }
+	/**
+	 * @brief  On mode 'b' we test result and if cracking tool ended with error we redirect is
+	 *	   STDERR to client's 
+	 */
         if( result != 0 )
          {
             char buffer[ 256 ];
@@ -416,10 +433,10 @@ int main(int argc, char **argv) {
          }
  
         //cerr << "main.cpp " << __LINE__ << endl;
-        
+        /// TODO: WHAT IS THIS?
         exit(127); // only if execv fails
     }
-    else { // pid!=0; parent process
+    else { /// pid!=0; parent process
         
         std::string program_output = "";
         char out_buffer;
@@ -442,10 +459,12 @@ int main(int argc, char **argv) {
         //cerr << "main.cpp:" << __LINE__ << endl;
         cerr << program_output << endl;
     }
-    
+// end of else    
 #endif
     
-    
+    /**
+     * @brief  Creates output file and finishes the boinc task  
+     */
     create_output_file(boinc);
     //cerr << "main.cpp:" << __LINE__ << endl;
     
@@ -459,25 +478,29 @@ int main(int argc, char **argv) {
 
 
 #ifdef __WIN32
-// Create a child process that uses the previously created pipes
-//  for STDERR and STDOUT.
 /**
- * @brief   Creates a child process with given process name
+ * @brief   Creates a child process with given process name which uses the previously created pipes
+ *	    for STDERR and STDOUT
  * @param proc_name
- * @return  PROCESS_INFORMATION
+ * @return  piProcInfo
  */
 PROCESS_INFORMATION CreateChildProcess(std::string proc_name){
-    // Set the text I want to run
+
     //char szCmdline[]="test --log_level=all --report_level=detailed";
+
     PROCESS_INFORMATION piProcInfo; 
     STARTUPINFO siStartInfo;
     bool bSuccess = FALSE; 
 
-    // Set up members of the PROCESS_INFORMATION structure. 
+    /**
+     * @brief	Set up members of the PROCESS_INFORMATION structure. 
+     */
     ZeroMemory( &piProcInfo, sizeof(PROCESS_INFORMATION) );
 
-    // Set up members of the STARTUPINFO structure. 
-    // This structure specifies the STDERR and STDOUT handles for redirection.
+    /**
+     * @brief	Set up members of the STARTUPINFO structure. 
+     *		This structure specifies the STDERR and STDOUT handles for redirection.
+     */
     ZeroMemory( &siStartInfo, sizeof(STARTUPINFO) );
     siStartInfo.cb = sizeof(STARTUPINFO); 
     siStartInfo.hStdError = g_hChildStd_ERR_Wr;
@@ -486,7 +509,9 @@ PROCESS_INFORMATION CreateChildProcess(std::string proc_name){
 
     LPSTR cmdline = const_cast<char*>(proc_name.c_str());
 
-    // Create the child process. 
+    /**
+     * @brief	Create the child process. 
+     */
     bSuccess = CreateProcess(NULL, 
         //szCmdline,     // command line 
         cmdline,
@@ -500,16 +525,22 @@ PROCESS_INFORMATION CreateChildProcess(std::string proc_name){
         &piProcInfo);  // receives PROCESS_INFORMATION
     CloseHandle(g_hChildStd_ERR_Wr);
     CloseHandle(g_hChildStd_OUT_Wr);
-    // If an error occurs, exit the application. 
+
+    /**
+     * @brief	If an error occurs, exit the application. 
+     */
     if ( ! bSuccess ) {
         exit(1);
     }
     return piProcInfo;
 }
 
-// Read output from the child process's pipe for STDOUT
-// and write to the parent process's pipe for STDOUT. 
-// Stop when there is no more data. 
+/**
+ * @brief   Read output from the child process's pipe for STDOUT and write to the parent process's pipe for STDOUT.
+	    Stop when there is no more data. 
+ * @param piProcInfo
+ * @return   out
+ */
 std::string ReadFromPipe(PROCESS_INFORMATION piProcInfo) {
     DWORD dwRead; 
     CHAR chBuf[BUFSIZE];
