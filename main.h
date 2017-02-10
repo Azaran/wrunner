@@ -122,7 +122,7 @@ HANDLE g_hChildStd_ERR_Wr = NULL;
  * @param proc_name
  * @return  piProcInfo
  */
-PROCESS_INFORMATION CreateChildProcess(std::string proc_name);
+PROCESS_INFORMATION CreateChildProcess(std::string procName);
 
 /**
  * @brief   Read output from the child process's pipe for STDOUT and write to the parent process's pipe for STDOUT.

@@ -31,21 +31,46 @@
 
 #include "control.h"
 
+/**
+ * @brief   Holds information about task.
+ */
 typedef struct taskParams{
-    char mode;
-    unsigned long long int from;
-    unsigned long long int to;
-    std::string password;
-    int simulation;
-    std::string charset;
-    std::string length;
+    char mode;	/// Cracking mode b-benchmark, n-normal, v-verify, u-unknown.
+    unsigned long long int from; /// Number of first password permutation.
+    unsigned long long int to;	/// Number of last password permutation.
+    std::string password;   /// Password if we have found one.
+    int simulation;	/// TOASK: What is this for?
+    std::string charset;    /// Charset of the task.
+    std::string length;	    /// Range of the length of the password. Format 'x:y'.
 } TTaskParams;
 
 extern TTaskParams task_params;
 
-void params_init();
-std::string lookForPassword(std::string program_output);
+/**
+ * @brief   Initializes values of task_params to default.
+ */
+void paramsInit();
+
+/**
+ * @brief   Saves parameter values from the input file to the taskParams
+ *	    structure.
+ * @param input_file_name
+ */
 void getTaskParams(std::string input_file_name);
+
+/**
+ * @brief   
+ * @param program_output
+ * @return  
+ */
+std::string lookForPassword(std::string program_output);
+
+/**
+ * @brief   
+ * @param is
+ * @param t
+ * @return  
+ */
 std::istream& safeGetline(std::istream& is, std::string& t);
 
 #endif /* PARSER_H */

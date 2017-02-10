@@ -5,7 +5,7 @@
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy 
  * of this software and associated documentation files (the "Software"), to deal 
- * in the Software without restriction, including without limitation the rights 
+ * in the Software without restriction, including without limitation the r  ghts 
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
  * copies of the Software, and to permit persons to whom the Software is 
  * furnished to do so, subject to the following conditions:
@@ -28,7 +28,7 @@ using std::string;
 
 TTaskParams task_params;
 
-void params_init() {
+void paramsInit() {
     task_params.mode = 'u';
     task_params.from = 0;
     task_params.to = 0;
@@ -44,6 +44,9 @@ void getTaskParams(std::string input_file_name) {
     string line, code, param;
     std::ifstream input_stream(input_file_name);
     
+    /**
+     * @brief   Safely parse input file.
+     */
     while(!safeGetline(input_stream, line).eof()) {
         parse_message_simple(line, &code, &param);
         if(code == "mode") {
@@ -70,11 +73,13 @@ void getTaskParams(std::string input_file_name) {
 std::istream& safeGetline(std::istream& is, std::string& t)
 {
     t.clear();
-    // The characters in the stream are read one-by-one using a std::streambuf.
-    // That is faster than reading them one-by-one using the std::istream.
-    // Code that uses streambuf this way must be guarded by a sentry object.
-    // The sentry object performs various tasks,
-    // such as thread synchronization and updating the stream state.
+    /**
+     * @brief	The characters in the stream are read one-by-one using a std::streambuf.
+     * That is faster than reading them one-by-one using the std::istream.
+     * Code that uses streambuf this way must be guarded by a sentry object.
+     * The sentry object performs various tasks,
+     * such as thread synchronization and updating the stream state.
+     */
 
     std::istream::sentry se(is, true);
     std::streambuf* sb = is.rdbuf();
@@ -89,7 +94,7 @@ std::istream& safeGetline(std::istream& is, std::string& t)
                 sb->sbumpc();
             return is;
         case EOF:
-            // Also handle the case when the last line has no line ending
+            /// @brief	Also handle the case when the last line has no line ending.
             if(t.empty())
                 is.setstate(std::ios::eofbit);
             return is;

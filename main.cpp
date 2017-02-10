@@ -157,7 +157,7 @@ int main(int argc, char **argv) {
     /**
      * @brief   Initializes and sets task_params based on xmlFile
      */
-    params_init();
+    paramsInit();
     standalone(argc, argv, &xmlFile);
     if(task_params.mode == 'u') {
 	boinc = true;
@@ -411,7 +411,7 @@ int main(int argc, char **argv) {
 
 
 #ifdef __WIN32
-PROCESS_INFORMATION CreateChildProcess(string proc_name){
+PROCESS_INFORMATION CreateChildProcess(string procName){
 
     //char szCmdline[]="test --log_level=all --report_level=detailed";
 
@@ -434,7 +434,7 @@ PROCESS_INFORMATION CreateChildProcess(string proc_name){
     siStartInfo.hStdOutput = g_hChildStd_OUT_Wr;
     siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
 
-    LPSTR cmdline = const_cast<char*>(proc_name.c_str());
+    LPSTR cmdline = const_cast<char*>(procName.c_str());
 
     /**
      * @brief	Create the child process. 

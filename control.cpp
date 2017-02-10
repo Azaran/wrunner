@@ -17,17 +17,17 @@ int lastStop;
 int lastHeartbeat = -1;
 unsigned long long int avgSpeed = 0;
 unsigned int avgSpeedCount = 0;
-float lastBoincFractionDone = 0.0;
+float lastBoincFractionDone = 0.0; /// Percetanges of how much of the task is done
 unsigned long long int pwcount = 0;
-double totaltime = 0.0;
+double totalTime = 0.0;
 string errorText = "no code";
 bool passwordFound = false;
 string password = "";
 
-
+// TODO: whats gonna be camelCase? Variable or function names?
 string generate_output_content() {
     //cerr << "control.cpp:" << __LINE__ << endl;
-    cerr << "control.cpp:" << __LINE__ << " totaltime:" << totaltime << ", avgSpeed:"<< avgSpeed << ", pwcount" << pwcount << endl;
+    cerr << "control.cpp:" << __LINE__ << " totalTime:" << totalTime << ", avgSpeed:"<< avgSpeed << ", pwcount" << pwcount << endl;
     string result = "";
 
     /**
@@ -43,7 +43,7 @@ string generate_output_content() {
             ss2 << pwcount;
             result += ss2.str() + "\n";
             stringstream ss3;
-            ss3 << totaltime;
+            ss3 << totalTime;
             result += ss3.str() + "\n";
         }
         else {
@@ -61,13 +61,13 @@ string generate_output_content() {
         else if(password.length()) {
             result = "n\n0\n" + password + "\n";
             stringstream ss;
-            ss << totaltime;
+            ss << totalTime;
             result += ss.str() + "\n";
         }
         else {
             result = "n\n1\n";
             stringstream ss;
-            ss << totaltime;
+            ss << totalTime;
             result += ss.str() + "\n";
         }
     }
@@ -77,7 +77,7 @@ string generate_output_content() {
      */
     else if(task_params.mode == 'v') {
         stringstream ss;
-        ss << totaltime;
+        ss << totalTime;
         if(errorText.length()) {
             result = "v\n2\n" + errorText + "\n";
             result += ss.str() + "\n";
@@ -337,9 +337,9 @@ void control_read(string message) {
         pwcount = boost::lexical_cast<unsigned long long int>(part2);
         //create_output_file("", false, "");
     }
-    else if(part1 == "totaltime") {
+    else if(part1 == "totalTime") {
         //cerr << "control.cpp" << __LINE__ << endl;
-        totaltime = boost::lexical_cast<double>(part2);
+        totalTime = boost::lexical_cast<double>(part2);
         //create_output_file("", false, "");
     }
 }
