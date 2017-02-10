@@ -1,4 +1,3 @@
-
 /*
  * Wrathion runner for BOINC client for dictionary-based version
  *
@@ -203,7 +202,7 @@ int main(int argc, char **argv) {
     cerr << "charset - " << task_params.charset << endl;
     cerr << "length - " << task_params.length << endl << endl;
 
-    /// TODO: What is the 'u' mode?
+    /// TOASK: What is the 'u' mode?
     if(task_params.mode == 'u') {
 	printf("./wrunner\n");
 	printf("1. (benchmark) -m b -c lower_lattin.txt -x test.xml\n");
@@ -367,7 +366,7 @@ int main(int argc, char **argv) {
 	}
 
 	//cerr << "main.cpp " << __LINE__ << endl;
-	/// TODO: WHAT IS THIS?
+	/// TOASK: WHAT IS THIS?
 	exit(127); // only if execv fails
     }
     else { /// pid!=0; parent process

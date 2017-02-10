@@ -117,7 +117,7 @@ void create_output_file(bool boinc) {
     
 }
 
-//TODO: Im bit unsure about the math here and about it is supposed to do.
+//TOASK: Im bit unsure about the math here and about it is supposed to do.
 int heartbeat_diff() {
     return counter >= lastHeartbeat ? counter - lastHeartbeat: COUNTERMAX - lastHeartbeat + counter;
 }

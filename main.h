@@ -107,6 +107,7 @@ inline bool file_exists (const std::string& name);
 int main(int argc, char **argv);
 
 #ifdef __WIN32 // WINDOWS --------------------------------------
+// TODO: I guess this isnt' right is it?
 //const char *Wrathion_path = "wrathion.exe";
 #pragma warning( disable : 4800 ) // stupid warning about bool
 #define BUFSIZE 4096
@@ -132,7 +133,7 @@ PROCESS_INFORMATION CreateChildProcess(std::string proc_name);
 std::string ReadFromPipe(PROCESS_INFORMATION piProcInfo);
 
 #else // ------- GNU/Linux -------------------------------------
-// TODO: I guess this isnt right is it?
+// TODO: I guess this isn't right is it?
 //const char *Wrathion_path = "fitcrack41";
 #endif
 
