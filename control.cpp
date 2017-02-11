@@ -9,7 +9,7 @@ using namespace boost;
 using std::string;
 
 pid_t pid = 0;
-boost::asio::io_service gio_service;
+boost::asio::ioService gioService;
 
 int counter = -1;
 int lastPause;
@@ -33,7 +33,7 @@ string generate_output_content() {
     /**
      * @brief Benchmark mode
      */
-    if(task_params.mode == 'b') {
+    if(taskParams.mode == 'b') {
         if(avgSpeed) {
             result = "b\n0\n";
             stringstream ss1;
@@ -54,7 +54,7 @@ string generate_output_content() {
     /**
      * @brief Normal mode
      */
-    else if(task_params.mode == 'n') {
+    else if(taskParams.mode == 'n') {
         if(errorText.length()) {
             result = "n\n2\n" + errorText + "\n";
         }
@@ -75,7 +75,7 @@ string generate_output_content() {
     /**
      * @brief Validation mode
      */
-    else if(task_params.mode == 'v') {
+    else if(taskParams.mode == 'v') {
         stringstream ss;
         ss << totalTime;
         if(errorText.length()) {
@@ -101,7 +101,7 @@ void create_output_file(bool boinc) {
     if(boinc) {
         char buf[256];
         MFILE out;
-        openOutput("out", out);
+        open_output("out", out);
         out.printf("%s", content.c_str());
         int retval = out.flush();
         if (retval) {
@@ -133,7 +133,7 @@ void control_main(class Session * session) {
         //cerr << "control.cpp:" << __LINE__ << " PID check" << endl;
         //create_output_file("process not alive", false, "");
         errorText = "process not alive";
-        gio_service.stop();
+        gioService.stop();
     }
     
     /**
@@ -144,13 +144,13 @@ void control_main(class Session * session) {
         kill(pid, SIGTERM);
         //create_output_file("process not responding", false, "");
         errorText = "process not responding";
-        gio_service.stop();
+        gioService.stop();
     }
     
     /**
      * @brief	Absolute timeout check for benchmark
      */
-    if(task_params.mode == 'b' && counter == BENCHMARK_TIMEOUT) {
+    if(taskParams.mode == 'b' && counter == BENCHMARK_TIMEOUT) {
         cerr << "control.cpp:" << __LINE__ << " absolute timeout" << endl;
         //cerr << "lastHeartbeat=" << lastHeartbeat << endl;
 
@@ -160,7 +160,7 @@ void control_main(class Session * session) {
         avgSpeed = 0; // 
         //create_output_file("timeout", false, "");
         errorText = "timeout";
-        gio_service.stop();
+        gioService.stop();
     }
     
     /**
@@ -206,7 +206,7 @@ void control_main(class Session * session) {
     lastPause = status.suspended;
     lastStop = status.quit_request + status.abort_request;
     
-    string simulationMessage = simulation(task_params.simulation, counter);
+    string simulationMessage = simulation(taskParams.simulation, counter);
     if(simulationMessage != "")
         Session::send_line(session, simulationMessage);
     
@@ -315,7 +315,7 @@ void control_read(string message) {
                 //fprintf(stderr, "control.cpp:%d\n", __LINE__);
                 //create_output_file("", false, "");
                 kill(pid, SIGTERM);
-                gio_service.stop();
+                gioService.stop();
             break;
             case 1:
                 //create_output_file("", false, "");

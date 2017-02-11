@@ -17,7 +17,7 @@
 #define DIVIDER ';'
 
 extern pid_t pid;
-extern boost::asio::io_service gio_service;
+extern boost::asio::ioService gioService;
 
 /** 
  * @brief   Prepares report for the server. 

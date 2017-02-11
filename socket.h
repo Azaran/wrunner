@@ -19,7 +19,7 @@
 
 class Session {
 public:
-    Session(boost::asio::io_service& io_service, unsigned short sessionIndex);
+    Session(boost::asio::ioService& ioService, unsigned short sessionIndex);
     static void regular_handler(const boost::system::error_code& error);
     static void send_line(class Session * sessionx, std::string message);
     boost::asio::ip::tcp::socket& socket();
@@ -44,14 +44,15 @@ private:
 
 class Server {
 public:
-    Server(boost::asio::io_service& io_service);
-    void start_accept();
+    Server(boost::asio::ioService& ioService);
     unsigned short listeningPort;
     
+    void start_accept();
+
 private:
-    void handle_accept(Session* new_session, const boost::system::error_code& error);
+    void handle_accept(Session* newSession, const boost::system::error_code& error);
     
-    boost::asio::io_service& io_service_;
+    boost::asio::ioService& ioSession;
     boost::asio::ip::tcp::acceptor acceptor_;
 };
 

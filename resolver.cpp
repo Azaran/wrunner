@@ -27,50 +27,50 @@
 #include "boinc_api.h"
 #include "resolver.h"
 
-FILE * openInput(std::string input_filename) {
-    char input_path[PATH_SIZE];
+FILE * open_input(std::string inputFilename) {
+    char inputPath[PATH_SIZE];
     char buf[BUFFER_SIZE];
     FILE *infile;
     int retval;
-    boinc_resolve_filename(input_filename.c_str(), input_path, sizeof(input_path));
-    infile = boinc_fopen(input_path, "r");
+    boinc_resolve_filename(inputFilename.c_str(), inputPath, sizeof(inputPath));
+    infile = boinc_fopen(inputPath, "r");
     if (!infile) {
         fprintf(stderr,
             "%s Couldn't find input file, resolved name %s.\n",
-            boinc_msg_prefix(buf, sizeof(buf)), input_path
+            boinc_msg_prefix(buf, sizeof(buf)), inputPath
         );
         exit(-1);
     }
-    //file_size(input_path, fsize); /* not needed anymore */
+    //file_size(inputPath, fsize); /* not needed anymore */
     return infile;
 }
 
-std::string resolveInputFile(std::string input_filename) {
-    char input_path[PATH_SIZE];
-    boinc_resolve_filename(input_filename.c_str(), input_path, sizeof(input_path));
-    std::string infile(input_path);
+std::string resolve_input_file(std::string inputFilename) {
+    char inputPath[PATH_SIZE];
+    boinc_resolve_filename(inputFilename.c_str(), inputPath, sizeof(inputPath));
+    std::string infile(inputPath);
     return infile;
 }
 
-std::string getEncryptedFile(std::string input_filename) {
-    char encrypted_file[PATH_SIZE];
-    boinc_resolve_filename(input_filename.c_str(), encrypted_file, sizeof(encrypted_file));
-    std::string efile(encrypted_file);
+std::string get_encrypted_file(std::string inputFilename) {
+    char encryptedFile[PATH_SIZE];
+    boinc_resolve_filename(inputFilename.c_str(), encryptedFile, sizeof(encryptedFile));
+    std::string efile(encryptedFile);
     return efile;
 }
 
-void openOutput(std::string output_filename, MFILE &out) {
-    char output_path[PATH_SIZE];
+void open_output(std::string outputFilename, MFILE &out) {
+    char openPath[PATH_SIZE];
     char buf[BUFFER_SIZE];
     int retval;
-    boinc_resolve_filename(output_filename.c_str(), output_path, sizeof(output_path));
-    retval = out.open(output_path, "wb");
+    boinc_resolve_filename(outputFilename.c_str(), openPath, sizeof(openPath));
+    retval = out.open(openPath, "wb");
     if (retval) {
         fprintf(stderr, "%s APP: upper_case output open failed:\n",
             boinc_msg_prefix(buf, sizeof(buf))
         );
         fprintf(stderr, "%s resolved name %s, retval %d\n",
-            boinc_msg_prefix(buf, sizeof(buf)), output_path, retval
+            boinc_msg_prefix(buf, sizeof(buf)), openPath, retval
         );
         perror("open");
         exit(1);

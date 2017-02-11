@@ -26,51 +26,51 @@
 
 using std::string;
 
-TTaskParams task_params;
+TTaskParams taskParams;
 
-void paramsInit() {
-    task_params.mode = 'u';
-    task_params.from = 0;
-    task_params.to = 0;
-    task_params.password = "";
-    task_params.simulation = 0;
-    task_params.charset = "lower_latin.txt";
-    task_params.length = "1:10";
+void params_init() {
+    taskParams.mode = 'u';
+    taskParams.from = 0;
+    taskParams.to = 0;
+    taskParams.password = "";
+    taskParams.simulation = 0;
+    taskParams.charset = "lower_latin.txt";
+    taskParams.length = "1:10";
 }
 
 
-void getTaskParams(std::string input_file_name) {
+void get_task_params(std::string inputFileName) {
     
     string line, code, param;
-    std::ifstream input_stream(input_file_name);
+    std::ifstream inputStream(inputFileName);
     
     /**
      * @brief   Safely parse input file.
      */
-    while(!safeGetline(input_stream, line).eof()) {
+    while(!safe_get_line(inputStream, line).eof()) {
         parse_message_simple(line, &code, &param);
         if(code == "mode") {
-            task_params.mode = param.c_str()[0];
+            taskParams.mode = param.c_str()[0];
         }
         else if(code == "charset") {
-            task_params.charset = param;
+            taskParams.charset = param;
         }
         else if(code == "passLength") {
-            task_params.length = param;
+            taskParams.length = param;
         }
         else if(code == "from") {
-            task_params.from = boost::lexical_cast<unsigned long long int>(param);
+            taskParams.from = boost::lexical_cast<unsigned long long int>(param);
         }
         else if(code == "count") {
-            task_params.to = task_params.from + boost::lexical_cast<unsigned long long int>(param);
+            taskParams.to = taskParams.from + boost::lexical_cast<unsigned long long int>(param);
         }
         else if(code == "password") {
-            task_params.password = param;
+            taskParams.password = param;
         }
     }
 }
 
-std::istream& safeGetline(std::istream& is, std::string& t)
+std::istream& safe_get_line(std::istream& is, std::string& t)
 {
     t.clear();
     /**

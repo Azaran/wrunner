@@ -130,7 +130,7 @@ PROCESS_INFORMATION CreateChildProcess(std::string procName);
  * @param piProcInfo
  * @return   out
  */
-std::string ReadFromPipe(PROCESS_INFORMATION piProcInfo);
+std::string read_from_pipe(PROCESS_INFORMATION piProcInfo);
 
 #else // ------- GNU/Linux -------------------------------------
 // TODO: I guess this isn't right is it?

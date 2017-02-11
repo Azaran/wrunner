@@ -26,9 +26,9 @@
 #define PATH_SIZE 512
 #define BUFFER_SIZE 256
 
-FILE * openInput(std::string input_filename);
-std::string resolveInputFile(std::string input_filename);
-std::string getEncryptedFile(std::string input_filename);
-void openOutput(std::string output_filename, MFILE &out);
+FILE * open_input(std::string inputFilename);
+std::string resolve_input_file(std::string inputFilename);
+std::string get_encrypted_file(std::string inputFilename);
+void open_output(std::string outputFilename, MFILE &out);
 
 #endif /* RESOLVER_H */

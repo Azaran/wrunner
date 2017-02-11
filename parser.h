@@ -44,26 +44,26 @@ typedef struct taskParams{
     std::string length;	    /// Range of the length of the password. Format 'x:y'.
 } TTaskParams;
 
-extern TTaskParams task_params;
+extern TTaskParams taskParams;
 
 /**
- * @brief   Initializes values of task_params to default.
+ * @brief   Initializes values of taskParams to default.
  */
-void paramsInit();
+void params_init();
 
 /**
  * @brief   Saves parameter values from the input file to the taskParams
  *	    structure.
- * @param input_file_name
+ * @param inputFileName
  */
-void getTaskParams(std::string input_file_name);
+void get_task_params(std::string inputFileName);
 
 /**
  * @brief   
- * @param program_output
+ * @param programOutput
  * @return  
  */
-std::string lookForPassword(std::string program_output);
+std::string look_for_password(std::string programOutput);
 
 /**
  * @brief   
@@ -71,6 +71,6 @@ std::string lookForPassword(std::string program_output);
  * @param t
  * @return  
  */
-std::istream& safeGetline(std::istream& is, std::string& t);
+std::istream& safe_get_line(std::istream& is, std::string& t);
 
 #endif /* PARSER_H */

@@ -11,11 +11,11 @@ boost::asio::deadline_timer * gTimer;
 std::vector<class Session *> sessions;
 unsigned int secondsElapsed = 0;
 
-Session::Session(io_service& io_service, unsigned short sessionIndex) : socket_(io_service) {
+Session::Session(ioService& ioService, unsigned short sessionIndex) : socket_(ioService) {
     //cerr << "socket.cpp:" << __LINE__ << endl;
 
     this->sessionIndex = sessionIndex;
-    gTimer = new deadline_timer(io_service, posix_time::seconds(1));
+    gTimer = new deadline_timer(ioService, posix_time::seconds(1));
     //cerr << "socket.cpp:" << __LINE__ << endl;
     gTimer->async_wait(Session::regular_handler);
     //cerr << "socket.cpp:" << __LINE__ << endl;
@@ -39,7 +39,7 @@ void Session::regular_handler(const system::error_code& error)
         }
         if(atLeastOneConnected == false && secondsElapsed >= 5) {
             //cerr << "socket.cpp:" << __LINE__ << endl;
-            gio_service.stop();
+            gioService.stop();
         }
         gTimer->expires_from_now(posix_time::seconds(1));
         gTimer->async_wait(regular_handler);
@@ -148,7 +148,7 @@ void Session::handle_write(const boost::system::error_code& error) {
 }
 
 
-Server::Server(boost::asio::io_service& io_service) : io_service_(io_service), acceptor_(io_service, tcp::endpoint(tcp::v4(), 0)) {
+Server::Server(boost::asio::ioService& ioService) : ioSession(ioService), acceptor_(ioService, tcp::endpoint(tcp::v4(), 0)) {
     tcp::endpoint le = acceptor_.local_endpoint();
     //cerr << "socket.cpp:" << __LINE__ << endl; 
     this->listeningPort = le.port();
@@ -158,14 +158,14 @@ Server::Server(boost::asio::io_service& io_service) : io_service_(io_service), a
 }
 
 void Server::start_accept() {
-    Session* new_session = new Session(io_service_, sessions.size());
+    Session* newSession = new Session(ioSession, sessions.size());
     //cerr << "socket.cpp:" << __LINE__ << endl;
-    acceptor_.async_accept(new_session->socket(), boost::bind(&Server::handle_accept, this, new_session, boost::asio::placeholders::error));
+    acceptor_.async_accept(newSession->socket(), boost::bind(&Server::handle_accept, this, newSession, boost::asio::placeholders::error));
     //cerr << "socket.cpp:" << __LINE__ << endl;
-    io_service_.run();
+    ioSession.run();
 }
 
-void Server::handle_accept(Session* new_session, const boost::system::error_code& error) {
+void Server::handle_accept(Session* newSession, const boost::system::error_code& error) {
     /*cerr << "socket.cpp:" << __LINE__ << " " << error << endl;
     if(error == error::eof)
         cerr << "socket.cpp:" << __LINE__ << endl;
@@ -174,15 +174,15 @@ void Server::handle_accept(Session* new_session, const boost::system::error_code
     */
     if (!error) {
         //cerr << "socket.cpp:" << __LINE__ << endl;
-        new_session->start();
+        newSession->start();
         //cerr << "socket.cpp:" << __LINE__ << endl;	
     }
     else {
         //cerr << "socket.cpp:" << __LINE__ << endl;
-        if(sessions[new_session->sessionIndex] != NULL) {
+        if(sessions[newSession->sessionIndex] != NULL) {
             //cerr << "socket.cpp:" << __LINE__ << endl;
-            sessions[new_session->sessionIndex] = NULL;
-            //delete new_session;
+            sessions[newSession->sessionIndex] = NULL;
+            //delete newSession;
         }
         //cerr << "socket.cpp:" << __LINE__ << endl;
     }

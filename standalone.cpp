@@ -48,21 +48,21 @@ void standalone(int argc, char **argv, string * xmlFile) {
     if(m == 'u')
         return;
     
-    task_params.mode = m;
-    task_params.charset = c;
+    taskParams.mode = m;
+    taskParams.charset = c;
     *xmlFile = x;
     
     if(m == 'b') {
-        task_params.length = l;
+        taskParams.length = l;
     }
     else if(m == 'n') {
-        task_params.from = f;
-        task_params.to = t;
-        task_params.length = l;
-        task_params.simulation = s;
+        taskParams.from = f;
+        taskParams.to = t;
+        taskParams.length = l;
+        taskParams.simulation = s;
     }
     else if(m == 'v') {
-        task_params.password = p;
+        taskParams.password = p;
     }
     
 }

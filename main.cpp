@@ -155,11 +155,11 @@ int main(int argc, char **argv) {
     string xmlFile;
 
     /**
-     * @brief   Initializes and sets task_params based on xmlFile
+     * @brief   Initializes and sets taskParams based on xmlFile
      */
-    paramsInit();
+    params_init();
     standalone(argc, argv, &xmlFile);
-    if(task_params.mode == 'u') {
+    if(taskParams.mode == 'u') {
 	boinc = true;
     }
 
@@ -188,22 +188,22 @@ int main(int argc, char **argv) {
     //cerr << "main.cpp " << __LINE__ << endl;
     if(boinc) {
 	//cerr << "main.cpp " << __LINE__ << endl;
-	getTaskParams(resolveInputFile("in"));
+	get_task_params(resolve_input_file("in"));
 	//cerr << "main.cpp " << __LINE__ << endl;
-	xmlFile = resolveInputFile("data");
+	xmlFile = resolve_input_file("data");
     }
 
     cerr << "Runner is running with parameters:" << endl;
-    cerr << "mode - " << task_params.mode << endl;
-    cerr << "from - " << task_params.from << endl;
-    cerr << "to - " << task_params.to << endl;
-    cerr << "password - " << task_params.password << endl;
-    cerr << "simulation - " << task_params.simulation << endl;
-    cerr << "charset - " << task_params.charset << endl;
-    cerr << "length - " << task_params.length << endl << endl;
+    cerr << "mode - " << taskParams.mode << endl;
+    cerr << "from - " << taskParams.from << endl;
+    cerr << "to - " << taskParams.to << endl;
+    cerr << "password - " << taskParams.password << endl;
+    cerr << "simulation - " << taskParams.simulation << endl;
+    cerr << "charset - " << taskParams.charset << endl;
+    cerr << "length - " << taskParams.length << endl << endl;
 
     /// TOASK: What is the 'u' mode?
-    if(task_params.mode == 'u') {
+    if(taskParams.mode == 'u') {
 	printf("./wrunner\n");
 	printf("1. (benchmark) -m b -c lower_lattin.txt -x test.xml\n");
 	printf("2. (normal) -m n -c lower_lattin.txt -f 1000 -t 2000 -x test.xml -s 1\n");
@@ -212,7 +212,7 @@ int main(int argc, char **argv) {
     }
 
     //cerr << "main.cpp " << __LINE__ << endl;
-    Server s(gio_service);
+    Server s(gioService);
     //cerr << "main.cpp " << __LINE__ << endl;
     cerr << "Port " << s.listeningPort << endl;
 
@@ -227,22 +227,22 @@ int main(int argc, char **argv) {
     /// TODO: Needs corrections or rework to work under windows
     cerr << "Windows sucks" << endl;
     /*
-       string wrathion_win = "fitcracker.exe -m BOINC";
-       wrathion_win += " -i ";
-       wrathion_win += xmlFile;
-       wrathion_win += " --mport ";
-       wrathion_win += s.listeningPort.c_str();
-       wrathion_win += " -v ";
-       if(task_params.mode == 'n') {
-       wrathion_win += " --index ";
-       wrathion_win += task_params.from;
-       wrathion_win += ":";
-       wrathion_win += task_params.to;
+       string w_cracker = "fitcracker.exe -m BOINC";
+       w_cracker += " -i ";
+       w_cracker += xmlFile;
+       w_cracker += " --mport ";
+       w_cracker += s.listeningPort.c_str();
+       w_cracker += " -v ";
+       if(taskParams.mode == 'n') {
+       w_cracker += " --index ";
+       w_cracker += taskParams.from;
+       w_cracker += ":";
+       w_cracker += taskParams.to;
        }
-       else if(task_params.mode == 'v') {
-       wrathion_win += " -g SINGLEPASS ";
-       wrathion_win += " --pw64 ";
-       wrathion_win += task_params.password;
+       else if(taskParams.mode == 'v') {
+       w_cracker += " -g SINGLEPASS ";
+       w_cracker += " --pw64 ";
+       w_cracker += taskParams.password;
        }
 
        SECURITY_ATTRIBUTES sa; 
@@ -268,7 +268,7 @@ int main(int argc, char **argv) {
     exit(1); 
     }
     // Create the child process. 
-    PROCESS_INFORMATION piProcInfo = CreateChildProcess(wrathion_win);
+    PROCESS_INFORMATION piProcInfo = CreateChildProcess(w_cracker);
 
     // Read from pipe that is the standard output for child process. 
     printf( "\n->Contents of child process STDOUT:\n\n", argv[1]);
@@ -313,13 +313,13 @@ int main(int argc, char **argv) {
 	char * arg_xmlFile = const_cast<char*>(xmlFile.c_str());
 
 	stringstream ss1, ss2;
-	ss1 << task_params.from;
-	ss2 << task_params.to;
+	ss1 << taskParams.from;
+	ss2 << taskParams.to;
 	string fromTo = ss1.str() + ":" + ss2.str();
 	char * arg_fromTo = const_cast<char*>(fromTo.c_str());
-	char * arg_password = const_cast<char*>((task_params.password).c_str());
-	char * arg_charset = const_cast<char*>((task_params.charset).c_str());
-	char * arg_length = const_cast<char*>((task_params.length).c_str());
+	char * arg_password = const_cast<char*>((taskParams.password).c_str());
+	char * arg_charset = const_cast<char*>((taskParams.charset).c_str());
+	char * arg_length = const_cast<char*>((taskParams.length).c_str());
 	char * arg_listeningPort = const_cast<char*>((port.str()).c_str());
 	char * arg_openclConfig1 = const_cast<char*>(openclConfig1.c_str());
 	char * arg_openclConfig2 = const_cast<char*>(openclConfig2.c_str());
@@ -341,15 +341,15 @@ int main(int argc, char **argv) {
 	 */
 	//cerr << "main.cpp " << __LINE__ << endl;
 	int result = 0;
-	if(task_params.mode == 'n') {
+	if(taskParams.mode == 'n') {
 	    print_secondary_process_params(argsN);
 	    execv(crackerPath.c_str(), argsN);
 	}
-	else if(task_params.mode == 'v') {
+	else if(taskParams.mode == 'v') {
 	    print_secondary_process_params(argsV);
 	    execv(crackerPath.c_str(), argsV);
 	}
-	else if(task_params.mode == 'b') {
+	else if(taskParams.mode == 'b') {
 	    print_secondary_process_params(argsB);
 	    result = execv(crackerPath.c_str(), argsB);
 	}
@@ -371,7 +371,7 @@ int main(int argc, char **argv) {
     }
     else { /// pid!=0; parent process
 
-	string program_output = "";
+	string programOutput = "";
 	char out_buffer;
 	close(pipefd[1]); 
 
@@ -379,7 +379,7 @@ int main(int argc, char **argv) {
 	//cerr << "main.cpp:" << __LINE__ << endl;
 	s.start_accept();
 
-	//int test = gio_service.run();
+	//int test = gioService.run();
 	//cerr << "main.cpp:" << __LINE__ << endl;
 	//fprintf(stderr, "main.cpp:%d\n", __LINE__);
 
@@ -387,10 +387,10 @@ int main(int argc, char **argv) {
 
 	while (read(pipefd[0], &out_buffer, 1) != 0)
 	{
-	    program_output += out_buffer;
+	    programOutput += out_buffer;
 	}
 	//cerr << "main.cpp:" << __LINE__ << endl;
-	cerr << program_output << endl;
+	cerr << programOutput << endl;
     }
     // end of else    
 #endif
