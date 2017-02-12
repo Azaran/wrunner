@@ -9,7 +9,7 @@ using namespace boost;
 using std::string;
 
 pid_t pid = 0;
-boost::asio::ioService gioService;
+boost::asio::io_service& gioService;
 
 int counter = -1;
 int lastPause;

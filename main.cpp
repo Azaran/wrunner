@@ -379,7 +379,7 @@ int main(int argc, char **argv) {
 	//cerr << "main.cpp:" << __LINE__ << endl;
 	s.start_accept();
 
-	//int test = gioService.run();
+	//int test = gio_service&ioService.run();
 	//cerr << "main.cpp:" << __LINE__ << endl;
 	//fprintf(stderr, "main.cpp:%d\n", __LINE__);
 
