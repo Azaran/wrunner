@@ -11,6 +11,7 @@ boost::asio::deadline_timer * gTimer;
 std::vector<class Session *> sessions;
 unsigned int secondsElapsed = 0;
 
+/** class Session */
 Session::Session(ioService& ioService, unsigned short sessionIndex) : socket_(ioService) {
     //cerr << "socket.cpp:" << __LINE__ << endl;
 
@@ -23,8 +24,8 @@ Session::Session(ioService& ioService, unsigned short sessionIndex) : socket_(io
     message = "";
 }
 
-void Session::regular_handler(const system::error_code& error)
-{
+void Session::regular_handler(const system::error_code& error) {
+
     //cerr << "socket.cpp:" << __LINE__ << endl;
     if(!error) {
         //cerr << "socket.cpp:" << __LINE__ << endl;
@@ -53,8 +54,8 @@ void Session::regular_handler(const system::error_code& error)
     secondsElapsed++;
 }
 
-void Session::send_line(class Session * session, string message)
-{
+void Session::send_line(class Session * session, string message) {
+
     //cerr << "socket.cpp:" << __LINE__ << endl;
     if(message.length() == 0 || message.at(message.length()-1) != '\n')
         message += '\n';
@@ -71,22 +72,23 @@ void Session::start() {
     sessions.push_back(this);
     //cerr << "socket.cpp:" << __LINE__ << endl;
     socket2 = &socket_;
-    socket_.async_read_some(boost::asio::buffer(data_in, max_length), boost::bind(&Session::handle_read, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
+    socket_.async_read_some(boost::asio::buffer(dataIn, maxLength), boost::bind(&Session::handle_read, this, boost::asio::placeholders::error, boost::asio::placeholders::bytesTransfered));
     //cerr << "socket.cpp:" << __LINE__ << endl;
 }
+/** end class Session */
 
-void Session::handle_read(const boost::system::error_code& error, size_t bytes_transferred) {
+void Session::handle_read(const boost::system::error_code& error, size_t bytesTransfered) {
     /*
-    cerr << "socket.cpp:" << __LINE__ << " error:" << error << ",bytes_transferred:" << bytes_transferred << endl;
+    cerr << "socket.cpp:" << __LINE__ << " error:" << error << ",bytesTransfered:" << bytesTransfered << endl;
     if(error == error::eof)
         cerr << "socket.cpp:" << __LINE__ << endl;
     if(error == error::connection_reset)
         cerr << "socket.cpp:" << __LINE__ << endl;
     */
     if (!error || error == error::eof || error == error::connection_reset ) {
-        //cerr << "socket.cpp:" << __LINE__ << " " << bytes_transferred << endl;
-        remains.append(data_in, bytes_transferred);
-        //cerr << "socket.cpp:" << __LINE__ << " " << data_in << endl;
+        //cerr << "socket.cpp:" << __LINE__ << " " << bytesTransfered << endl;
+        remains.append(dataIn, bytesTransfered);
+        //cerr << "socket.cpp:" << __LINE__ << " " << dataIn << endl;
         //cerr << "socket.cpp:" << __LINE__ << " " << remains << endl;
         
         int index = remains.find('\n');
@@ -117,7 +119,7 @@ void Session::handle_read(const boost::system::error_code& error, size_t bytes_t
     }
     else {
         //cerr << "socket.cpp:" << __LINE__ << endl;
-        socket_.async_read_some(boost::asio::buffer(data_in, max_length), boost::bind(&Session::handle_read, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
+        socket_.async_read_some(boost::asio::buffer(dataIn, maxLength), boost::bind(&Session::handle_read, this, boost::asio::placeholders::error, boost::asio::placeholders::bytesTransfered));
         //cerr << "socket.cpp:" << __LINE__ << endl;
     }
     //cerr << "socket.cpp:" << __LINE__ << endl;
@@ -132,7 +134,7 @@ void Session::handle_write(const boost::system::error_code& error) {
     */
     if (!error) {
         //cerr << "socket.cpp:" << __LINE__ << endl;
-        socket_.async_read_some(boost::asio::buffer(data_in, max_length), boost::bind(&Session::handle_read, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
+        socket_.async_read_some(boost::asio::buffer(dataIn, maxLength), boost::bind(&Session::handle_read, this, boost::asio::placeholders::error, boost::asio::placeholders::bytesTransfered));
         //cerr << "socket.cpp:" << __LINE__ << endl;
     }
     else {
@@ -147,7 +149,7 @@ void Session::handle_write(const boost::system::error_code& error) {
     //cerr << "socket.cpp:" << __LINE__ << endl;
 }
 
-
+/** class Server */
 Server::Server(boost::asio::ioService& ioService) : ioSession(ioService), acceptor_(ioService, tcp::endpoint(tcp::v4(), 0)) {
     tcp::endpoint le = acceptor_.local_endpoint();
     //cerr << "socket.cpp:" << __LINE__ << endl; 

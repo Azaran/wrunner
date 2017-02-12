@@ -26,9 +26,32 @@
 #define PATH_SIZE 512
 #define BUFFER_SIZE 256
 
+/**
+ * @brief   Opens input file with given filename.
+ * @param inputFilename
+ * @return  infile 
+ */
 FILE * open_input(std::string inputFilename);
+
+/**
+ * @brief   Resolves filename and makes absolute path to the file.
+ * @param inputFilename
+ * @return  infile 
+ */
 std::string resolve_input_file(std::string inputFilename);
+
+/**
+ * @brief   Resolves filename and makes absolute path to the encrypted file.
+ * @param inputFilename
+ * @return  
+ */
 std::string get_encrypted_file(std::string inputFilename);
+
+/**
+ * @brief   Resolves filename and opens output filename.
+ * @param outputFilename
+ * @param out
+ */
 void open_output(std::string outputFilename, MFILE &out);
 
 #endif /* RESOLVER_H */

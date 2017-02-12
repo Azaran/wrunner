@@ -75,10 +75,10 @@ std::istream& safe_get_line(std::istream& is, std::string& t)
     t.clear();
     /**
      * @brief	The characters in the stream are read one-by-one using a std::streambuf.
-     * That is faster than reading them one-by-one using the std::istream.
-     * Code that uses streambuf this way must be guarded by a sentry object.
-     * The sentry object performs various tasks,
-     * such as thread synchronization and updating the stream state.
+     *		That is faster than reading them one-by-one using the std::istream.
+     * 		Code that uses streambuf this way must be guarded by a sentry object.
+     * 		The sentry object performs various tasks, such as thread 
+     * 		synchronization and updating the stream state.
      */
 
     std::istream::sentry se(is, true);

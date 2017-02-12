@@ -66,10 +66,10 @@ void get_task_params(std::string inputFileName);
 std::string look_for_password(std::string programOutput);
 
 /**
- * @brief   
+ * @brief   Safely reads line char by char from std::streambuf.   
  * @param is
  * @param t
- * @return  
+ * @return is 
  */
 std::istream& safe_get_line(std::istream& is, std::string& t);
 

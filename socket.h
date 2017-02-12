@@ -19,37 +19,80 @@
 
 class Session {
 public:
+    /**
+     * @brief   Session constructor.
+     * @param ioService
+     * @param sessionIndex
+     */
     Session(boost::asio::ioService& ioService, unsigned short sessionIndex);
+
+    // TOASK: How this work or what it does?
+    /**
+     * @brief   
+     * @param error
+     */
     static void regular_handler(const boost::system::error_code& error);
+
+    /**
+     * @brief   Sends message to the session.
+     * @param sessionx
+     * @param message
+     */
     static void send_line(class Session * sessionx, std::string message);
-    boost::asio::ip::tcp::socket& socket();
     
+    /**
+     * @brief   Starts the session.
+     */
     void start();
     
+    boost::asio::ip::tcp::socket& socket();
     //bool connected;
     boost::asio::ip::tcp::socket * socket2;
     unsigned short sessionIndex;
     
 private:
-    void handle_read(const boost::system::error_code& error, size_t bytes_transferred);
+    /**
+     * @brief   Handles reading from message properly in safe way. 
+     * @param error
+     * @param bytesTransfered
+     */
+    void handle_read(const boost::system::error_code& error, size_t bytesTransfered);
+
+    /**
+     * @brief   Handles writing into message properly.
+     * @param error
+     */
     void handle_write(const boost::system::error_code& error);
     
-    enum { max_length = 1024 };
-    char data_in[max_length];
-    std::string data_out;
+    enum { maxLength = 1024 };
+    char dataIn[maxLength];
+    std::string dataOut;
     boost::asio::ip::tcp::socket socket_;
     std::string remains;
     std::string message;
-}; 
+} 
 
 class Server {
 public:
+    /**
+     * @brief   Constructor of Server.
+     * @param ioService
+     */
     Server(boost::asio::ioService& ioService);
     unsigned short listeningPort;
     
+    /**
+     * @brief   Makes new session and starts accepting asynchronously.
+     */
     void start_accept();
 
 private:
+    /**
+     * @brief   Handles start of server's acceptance. Starts session and server
+     *		asynchronous accept.
+     * @param newSession
+     * @param error
+     */
     void handle_accept(Session* newSession, const boost::system::error_code& error);
     
     boost::asio::ioService& ioSession;
