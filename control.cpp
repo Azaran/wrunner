@@ -224,16 +224,26 @@ void parse_message(string message, string * part1, string * part2, string * part
     //cerr << "% index=" << index << endl;
     delimeter = message.find(DIVIDER, index);
     //cerr << "% delimeter=" << delimeter << endl;
+
+    /**
+     * @brief   If we didn't run out of string's max length.
+     */
     if(delimeter != string::npos) {
         *part1 = message.substr(index, delimeter - index);
         //cerr << "% part1=" << *part1 << endl;
         
+	/**
+	 * @brief   Find next part.
+	 */
         index = delimeter + 1;
         delimeter = message.find(DIVIDER, index);
         if(delimeter != string::npos) {
             *part2 = message.substr(index, delimeter - index);
             //cerr << "% part2=" << *part2 << endl;
-            
+
+	    /**
+	     * @brief   Find and save last part.
+	     */
             index = delimeter + 1;
             delimeter = message.find(DIVIDER, index);
             if(delimeter != string::npos) {
@@ -260,6 +270,10 @@ void parse_message_simple(string message, string * part1, string * part2) {
     size_t delimeter1, delimeter2;
     
     delimeter1 = message.find(DIVIDER, 0);
+
+    /**
+     * @brief   If we didn't run out of string's max length.
+     */
     if(delimeter1 != string::npos) {
         *part1 = message.substr(0, delimeter1);
     }
@@ -268,6 +282,10 @@ void parse_message_simple(string message, string * part1, string * part2) {
     }
     
     delimeter2 = message.find(DIVIDER, delimeter1 + 1);
+    /**
+     * @brief   If we didn't run out of string's max length while searching for
+     *		second part.
+     */
     if(delimeter2 != string::npos) {
         *part2 = message.substr(delimeter1 + 1, delimeter2 - (delimeter1 + 1));
     }

@@ -9,10 +9,10 @@
 
 // TOASK: What is this function for?
 /**
- * @brief   
+ * @brief   To be filled after explanation.   
  * @param index
  * @param counter
- * @return  
+ * @return result 
  */
 std::string simulation(int index, unsigned long long int counter);
 

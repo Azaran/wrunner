@@ -45,7 +45,7 @@ void get_task_params(std::string inputFileName) {
     std::ifstream inputStream(inputFileName);
     
     /**
-     * @brief   Safely parse input file.
+     * @brief   Safely parse input file and save content into the structure.
      */
     while(!safe_get_line(inputStream, line).eof()) {
         parse_message_simple(line, &code, &param);
@@ -94,7 +94,9 @@ std::istream& safe_get_line(std::istream& is, std::string& t)
                 sb->sbumpc();
             return is;
         case EOF:
-            /// @brief	Also handle the case when the last line has no line ending.
+	    /**
+	     * @brief	Also handle the case when the last line has no line ending.
+	     */
             if(t.empty())
                 is.setstate(std::ios::eofbit);
             return is;
