@@ -24,6 +24,10 @@ Session::Session(io_service& ioService, unsigned short sessionIndex) : socket_(i
     message = "";
 }
 
+// TOASK: Nejak si nejsem jistej jestli to chapu spravne. Je to tak ze pokud
+//	  neni zadna session "spojena" tak zastavuju sluzbu a v okamziky kdy
+//	  dostanu nejakou session tak spustim control_main pro tu sesstion a 
+//	  hlidam nejak expirace a cekam na async eventy?
 void Session::regular_handler(const system::error_code& error) {
 
     //cerr << "socket.cpp:" << __LINE__ << endl;

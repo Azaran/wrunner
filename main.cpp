@@ -202,7 +202,8 @@ int main(int argc, char **argv) {
     cerr << "charset - " << taskParams.charset << endl;
     cerr << "length - " << taskParams.length << endl << endl;
 
-    /// TOASK: What is the 'u' mode?
+    /// TOASK:  K cemu je 'u' mode? Je to jako defaultni neinicializovanej rezim
+    //		nebo to ma jeste nejakej hlubsi smysl?
     if(taskParams.mode == 'u') {
 	printf("./wrunner\n");
 	printf("1. (benchmark) -m b -c lower_lattin.txt -x test.xml\n");
@@ -366,7 +367,10 @@ int main(int argc, char **argv) {
 	}
 
 	//cerr << "main.cpp " << __LINE__ << endl;
-	/// TOASK: WHAT IS THIS?
+
+	// TOASK:   Nechybi tady nejaka podminka nebo nema to byt v v
+	//	    predchazejicim bloku z podminkou? Nejak se mi nezda ze by
+	//	    mel Child proces vzdy koncit 127
 	exit(127); // only if execv fails
     }
     else { /// pid!=0; parent process

@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-// TOASK: What is this function for?
+// TOASK: K cemu obecne slouzi ta simulace?
 /**
  * @brief   To be filled after explanation.   
  * @param index

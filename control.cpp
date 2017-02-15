@@ -1,6 +1,6 @@
 #include "control.h"
 
-#define COUNTERMAX 100000000
+#define COUNTERMAX      100000000
 #define HEARTBEATMAX 160000000000 //16
 #define BENCHMARK_TIMEOUT 60
 
@@ -24,7 +24,6 @@ string errorText = "no code";
 bool passwordFound = false;
 string password = "";
 
-// TODO: whats gonna be camelCase? Variable or function names?
 string generate_output_content() {
     //cerr << "control.cpp:" << __LINE__ << endl;
     cerr << "control.cpp:" << __LINE__ << " totalTime:" << totalTime << ", avgSpeed:"<< avgSpeed << ", pwcount" << pwcount << endl;
@@ -117,8 +116,9 @@ void create_output_file(bool boinc) {
     
 }
 
-//TOASK: Im bit unsure about the math here and about it is supposed to do.
 int heartbeat_diff() {
+    // TOASK: Je vubec mozne za pouziti tohoto vypoctu dosahnout splneni
+    //	      podminky na radku 141?
     return counter >= lastHeartbeat ? counter - lastHeartbeat: COUNTERMAX - lastHeartbeat + counter;
 }
 

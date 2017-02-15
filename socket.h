@@ -26,9 +26,8 @@ public:
      */
     Session(boost::asio::io_service& ioService, unsigned short sessionIndex);
 
-    // TOASK: How this work or what it does?
     /**
-     * @brief   
+     * @brief  To be filled. 
      * @param error
      */
     static void regular_handler(const boost::system::error_code& error);
