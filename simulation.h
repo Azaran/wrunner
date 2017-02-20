@@ -7,9 +7,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-// TOASK: K cemu obecne slouzi ta simulace?
 /**
- * @brief   To be filled after explanation.   
+ * @brief   Sends control messages to BOINC client. Works like basic
+ *	    substitution of BOINC manager and allows to send control commands at
+ *	    given times.
  * @param index
  * @param counter
  * @return result 

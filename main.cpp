@@ -202,8 +202,11 @@ int main(int argc, char **argv) {
     cerr << "charset - " << taskParams.charset << endl;
     cerr << "length - " << taskParams.length << endl << endl;
 
-    /// TOASK:  K cemu je 'u' mode? Je to jako defaultni neinicializovanej rezim
-    //		nebo to ma jeste nejakej hlubsi smysl?
+    /**
+     * @brief	'u' mode is just for the "help" message and is used as default
+     *		value for the case when there wouldn't be specific value in
+     *		config file
+     */
     if(taskParams.mode == 'u') {
 	printf("./wrunner\n");
 	printf("1. (benchmark) -m b -c lower_lattin.txt -x test.xml\n");
@@ -354,9 +357,10 @@ int main(int argc, char **argv) {
 	    print_secondary_process_params(argsB);
 	    result = execv(crackerPath.c_str(), argsB);
 	}
+
 	/**
-	 * @brief  On mode 'b' we test result and if cracking tool ended with error we redirect is
-	 *	   STDERR to client's 
+	 * @brief   On mode 'b' we test result and if cracking tool ended with
+	 *	    error we redirect is STDERR to client's 
 	 */
 	if( result != 0 )
 	{
@@ -368,10 +372,11 @@ int main(int argc, char **argv) {
 
 	//cerr << "main.cpp " << __LINE__ << endl;
 
-	// TOASK:   Nechybi tady nejaka podminka nebo nema to byt v v
-	//	    predchazejicim bloku z podminkou? Nejak se mi nezda ze by
-	//	    mel Child proces vzdy koncit 127
-	exit(127); // only if execv fails
+	/**
+	 * @brief   Only if mode wasn't 'b' and program ran by execv failed
+	 *	    while running
+	 */
+	exit(127); 
     }
     else { /// pid!=0; parent process
 

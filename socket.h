@@ -27,7 +27,8 @@ public:
     Session(boost::asio::io_service& ioService, unsigned short sessionIndex);
 
     /**
-     * @brief  To be filled. 
+     * @brief	Periodically checks whether the session is still active and end
+     *		tool is running and is responding.
      * @param error
      */
     static void regular_handler(const boost::system::error_code& error);

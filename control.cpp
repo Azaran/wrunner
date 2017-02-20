@@ -117,8 +117,11 @@ void create_output_file(bool boinc) {
 }
 
 int heartbeat_diff() {
-    // TOASK: Je vubec mozne za pouziti tohoto vypoctu dosahnout splneni
-    //	      podminky na radku 141?
+    /**
+     * @brief	When counter < lastHeartbeat then it means that we reached
+     *		COUNTERMAX and counter started from 0 but we need to get positive 
+     *		diff number.
+     */ 
     return counter >= lastHeartbeat ? counter - lastHeartbeat: COUNTERMAX - lastHeartbeat + counter;
 }
 

@@ -39,7 +39,7 @@ typedef struct taskParams{
     unsigned long long int from; /// Number of first password permutation.
     unsigned long long int to;	/// Number of last password permutation.
     std::string password;   /// Password if we have found one.
-    int simulation;	// TOASK: K cemu to slouzi? Nestaci treba jen bool na zapnuti vypnuti simulace nebo tak?
+    int simulation;	    /// ID of simulation to use.	
     std::string charset;    /// Charset of the task.
     std::string length;	    /// Range of the length of the password. Format 'x:y'.
 } TTaskParams;
