@@ -6,10 +6,13 @@
 #include <cstdlib>
 
 #include <boost/algorithm/string/find.hpp>
+#include <boost/regex.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include "parser.h"
 #include "socket.h"
 #include "simulation.h"
+#include "encoding.h"
 
 #define COUNTERMAX 100000000
 #define HEARTBEATMAX 160000000000 //16
@@ -26,8 +29,8 @@ extern boost::asio::io_service& gioService;
 std::string generate_output_content() ;
 
 /**
- * @brief   Makes file 'out' with the report which is sent the server and also prints the
- * report on the STDERR.
+ * @brief   Makes file 'out' with the report which is sent the server and also 
+ *	    prints the report on the STDERR.
  * @param boinc
  */
 void create_output_file(bool boinc);
@@ -53,6 +56,22 @@ void control_main(class Session * session);
  * @param part3
  */
 void parse_message(std::string message, std::string * part1, std::string * part2, std::string * part3);
+
+ /**
+ * @brief   Parses line of the 'in' file in the format introduced in January
+ *	    2017 by Lukas Zobal.
+ * @param message
+ * @param part1
+ * @param part2
+ */
+void parse_message_new_config(std::string message, std::string * part1, std::string * part2);
+
+/**
+ * @brief   Parses charset out of the XML.
+ * @param message
+ * @param charset
+ */
+std::string parse_charset_xml(std::string message);
 
 //void parse_message2(std::string message, std::string * part1, std::string * part2, std::string * part3);
 

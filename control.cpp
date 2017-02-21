@@ -1,11 +1,6 @@
 #include "control.h"
 
-#define COUNTERMAX      100000000
-#define HEARTBEATMAX 160000000000 //16
-#define BENCHMARK_TIMEOUT 60
-
 using namespace std;
-using namespace boost;
 using std::string;
 
 pid_t pid = 0;
@@ -297,8 +292,54 @@ void parse_message_simple(string message, string * part1, string * part2) {
     }
 }
 
+void parse_message_new_config(string message, string * part1, string * part2) {
+
+    if (message.empty())
+	return;
+
+    boost::smatch match;
+    // cout << message << endl;
+    boost::regex re("\\|\\|\\|(.*)\\|(.*)\\|([0-9]*)\\|(.*)\\|\\|\\|");
+    if (!boost::regex_match(message, match, re)) {
+	cout << "Wrong parsing of in file" << endl;
+	exit(140);
+    }
+    
+    if (match[4].length() != boost::lexical_cast<int>(match[3])) {
+	cerr << "Length of the string doesn't match." << endl;
+	cerr << flush;
+	exit(141);
+    }
+
+    *part1 = match.str(1);
+    *part2 = match.str(4);
+}
+
+std::string parse_charset_xml(std::string message) {
+
+    cout << message << endl;
+    boost::smatch match;
+    cout << "file: " << __FILE__ << " line: " << __LINE__ << endl;
+    boost::regex re(".*<Chars>(.*)</Chars>.*");
+    cout << "file: " << __FILE__ << " line: " << __LINE__ << endl;
+    try {
+	boost::regex_match(message, match, re);
+    }
+    catch (std::runtime_error){
+	cout << "Wrong parsing of xml" << endl;
+	exit(142);
+    }
+    cout << "file: " << __FILE__ << " line: " << __LINE__ << endl;
+     
+    for(int i=0; i < match.size(); i++)
+	cout << "match[" << i << "]: " << match.str(i) << endl;
+    return match.str(1);
+
+}
+
 void control_read(string message) {
-    //cerr << "control.cpp:" << __LINE__ << " " << message << endl;
+    cerr << "control.cpp:" << __LINE__ << " " << message << endl;
+
     //cerr << "<message: " << message << "(" << message.length() << ")" << endl;
     //cout << "< " << message << "(" << message.length() << ")" << endl;
     

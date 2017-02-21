@@ -317,22 +317,33 @@ int main(int argc, char **argv) {
 	char * arg_xmlFile = const_cast<char*>(xmlFile.c_str());
 
 	stringstream ss1, ss2;
+
 	ss1 << taskParams.from;
 	ss2 << taskParams.to;
 	string fromTo = ss1.str() + ":" + ss2.str();
+
+	ss1.clear();
+	ss2.clear();
+
+	ss1 << taskParams.from;
+	ss2 << taskParams.to;
+	string plen = ss1.str() + ":" + ss2.str();
+
 	char * arg_fromTo = const_cast<char*>(fromTo.c_str());
+	char * arg_passLen = const_cast<char*>(plen.c_str());
 	char * arg_password = const_cast<char*>((taskParams.password).c_str());
 	char * arg_charset = const_cast<char*>((taskParams.charset).c_str());
 	char * arg_length = const_cast<char*>((taskParams.length).c_str());
 	char * arg_listeningPort = const_cast<char*>((port.str()).c_str());
 	char * arg_openclConfig1 = const_cast<char*>(openclConfig1.c_str());
 	char * arg_openclConfig2 = const_cast<char*>(openclConfig2.c_str());
+	char * arg_generator = const_cast<char*>(taskParams.generator.c_str());
 	//cerr << "main.cpp " << __LINE__ << endl;
 
 	//"-v", 
-	static char *argsN[] = {arg_bin, "-m", "BOINC", "-i", arg_xmlFile, "--mport", arg_listeningPort, "-c", arg_charset, "--index", arg_fromTo, "-l", arg_length, "-o", arg_openclConfig1, arg_openclConfig2, NULL};
-	static char *argsV[] = {arg_bin, "-m", "BOINC", "-i", arg_xmlFile, "--mport", arg_listeningPort, "-c", arg_charset, "-g", "SINGLEPASS", "--pw64", arg_password, "-o", arg_openclConfig1, arg_openclConfig2, NULL};
-	static char *argsB[] = {arg_bin, "-m", "BOINC", "-i", arg_xmlFile, "--mport", arg_listeningPort, "-c", arg_charset, "-b", "-l", arg_length, "-o", arg_openclConfig1, arg_openclConfig2, NULL};
+	static char *argsN[] = {arg_bin, "-m", "BOINC", "-g", arg_generator, "-i", arg_xmlFile, "--mport", arg_listeningPort, "-c", arg_charset, "--index", arg_fromTo, "-l", arg_length, "-o", arg_openclConfig1, arg_openclConfig2, NULL};
+	static char *argsV[] = {arg_bin, "-m", "BOINC", "-g", arg_generator, "-i", arg_xmlFile, "--mport", arg_listeningPort, "-c", arg_charset, "-g", "SINGLEPASS", "--pw64", arg_password, "-o", arg_openclConfig1, arg_openclConfig2, NULL};
+	static char *argsB[] = {arg_bin, "-m", "BOINC", "-g", arg_generator, "-i", arg_xmlFile, "--mport", arg_listeningPort, "-c", arg_charset, "-b", "-l", arg_length, "-o", arg_openclConfig1, arg_openclConfig2, NULL};
 
 	close(pipefd[0]);    // close reading end in the child
 	dup2(pipefd[1], 1);  // send stdout to the pipe

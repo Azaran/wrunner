@@ -24,6 +24,7 @@
 
 #include "parser.h"
 
+using namespace std;
 using std::string;
 
 TTaskParams taskParams;
@@ -36,42 +37,76 @@ void params_init() {
     taskParams.simulation = 0;
     taskParams.charset = "lower_latin.txt";
     taskParams.length = "1:10";
+    taskParams.generator = "BRUTE";
+    taskParams.enable_ocl = false;
+    taskParams.enable_cuda = false;
+    taskParams.name = "";
 }
-
 
 void get_task_params(std::string inputFileName) {
     
     string line, code, param;
     std::ifstream inputStream(inputFileName);
-    
+ 
     /**
      * @brief   Safely parse input file and save content into the structure.
      */
     while(!safe_get_line(inputStream, line).eof()) {
-        parse_message_simple(line, &code, &param);
-        if(code == "mode") {
+        parse_message_new_config(line, &code, &param);
+
+        if(code == "name") {
+            taskParams.name = param.c_str()[0];
+	    cout << "name: " << taskParams.name << endl;
+        }
+        else if(code == "mode") {
             taskParams.mode = param.c_str()[0];
-        }
-        else if(code == "charset") {
-            taskParams.charset = param;
-        }
-        else if(code == "passLength") {
-            taskParams.length = param;
+	    cout << "mode: " << taskParams.mode << endl;
         }
         else if(code == "from") {
             taskParams.from = boost::lexical_cast<unsigned long long int>(param);
+	    cout << "from: " << taskParams.from << endl;
         }
         else if(code == "count") {
             taskParams.to = taskParams.from + boost::lexical_cast<unsigned long long int>(param);
+	    cout << "count: " << taskParams.to << endl;
         }
         else if(code == "password") {
             taskParams.password = param;
+	    cout << "password: " << taskParams.password << endl;
+        }
+        else if(code == "generator") {
+            taskParams.generator = param;
+	    cout << "generator: " << taskParams.generator << endl;
+        }
+        else if(code == "enable_opencl") {
+	    taskParams.enable_ocl = boost::lexical_cast<bool>(param);
+	    cout << "enable_opencl: " << taskParams.enable_ocl << endl;
+        }
+        else if(code == "enable_cuda") {
+            taskParams.enable_cuda = boost::lexical_cast<bool>(param);
+	    cout << "enable_cuda: " << taskParams.enable_cuda << endl;
+        }
+        else if(code == "passlen_min") {
+            taskParams.passlen_min = boost::lexical_cast<int>(param);
+	    cout << "passlen_min: " << taskParams.passlen_min << endl;
+        }
+        else if(code == "passlen_max") {
+            taskParams.passlen_max = boost::lexical_cast<int>(param);
+	    cout << "passlen_max: " << taskParams.passlen_max << endl;
+	    taskParams.length = to_string(taskParams.passlen_min) + ":" + to_string(taskParams.passlen_max);
+        }
+        else if(code == "charset_xml") {
+	    ofstream charsetFile;
+	    charsetFile.open("charset.xml", ios::trunc);
+	    charsetFile << decode64(param);
+	    charsetFile.close(); 
+	    taskParams.charset = "charset.xml";
+	    cout << "charset: " << taskParams.charset << endl;
         }
     }
 }
 
-std::istream& safe_get_line(std::istream& is, std::string& t)
-{
+std::istream& safe_get_line(std::istream& is, std::string& t) {
     t.clear();
     /**
      * @brief	The characters in the stream are read one-by-one using a std::streambuf.

@@ -30,6 +30,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "control.h"
+#include "encoding.h"
 
 /**
  * @brief   Holds information about task.
@@ -42,6 +43,14 @@ typedef struct taskParams{
     int simulation;	    /// ID of simulation to use.	
     std::string charset;    /// Charset of the task.
     std::string length;	    /// Range of the length of the password. Format 'x:y'.
+    
+    // New
+    std::string name;
+    std::string generator;
+    bool enable_ocl;
+    bool enable_cuda;
+    int passlen_min;
+    int passlen_max;
 } TTaskParams;
 
 extern TTaskParams taskParams;

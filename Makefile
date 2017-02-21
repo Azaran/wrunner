@@ -34,6 +34,9 @@ distclean:
 
 resolver.o: resolver.cpp
 	$(CXX) $(CXXFLAGS) -c resolver.cpp
+
+encoding.o: encoding.cpp
+	$(CXX) $(CXXFLAGS) -c encoding.cpp -std=c++0x
 	
 parser.o: parser.cpp
 	$(CXX) $(CXXFLAGS) -c parser.cpp -std=c++0x
@@ -53,6 +56,6 @@ simulation.o: simulation.cpp
 main.o: main.cpp
 	$(CXX) $(CXXFLAGS) -c main.cpp -Wno-write-strings
 
-wrunner: resolver.o parser.o socket.o control.o standalone.o simulation.o main.o libboinc_api.a libboinc.a
-	$(CXX) $(CXXFLAGS) -o wrunner resolver.o parser.o socket.o control.o standalone.o simulation.o main.o -pthread -lboinc_api -lboinc -lboost_system -lboost_thread -lzip -lz -static-libgcc -static-libstdc++ -static
+wrunner: resolver.o encoding.o parser.o socket.o control.o standalone.o simulation.o main.o libboinc_api.a libboinc.a
+	$(CXX)  -o wrunner resolver.o encoding.o parser.o socket.o control.o standalone.o simulation.o main.o $(CXXFLAGS) -pthread -lboinc_api -lboinc -lboost_system -lboost_thread -lboost_regex -lzip -lz -static-libgcc -static-libstdc++ -static
 
