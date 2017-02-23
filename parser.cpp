@@ -51,6 +51,30 @@ void get_task_params(std::string inputFileName) {
     /**
      * @brief   Safely parse input file and save content into the structure.
      */
+#ifndef NEWCONFIG
+    while(!safe_get_line(inputStream, line).eof()) {
+        parse_message_simple(line, &code, &param);
+        if(code == "mode") {
+            taskParams.mode = param.c_str()[0];
+        }
+        else if(code == "charset") {
+            taskParams.charset = param;
+        }
+        else if(code == "passLength") {
+            taskParams.length = param;
+        }
+        else if(code == "from") {
+            taskParams.from = boost::lexical_cast<unsigned long long int>(param);
+        }
+        else if(code == "count") {
+            taskParams.to = taskParams.from + boost::lexical_cast<unsigned long long int>(param);
+        }
+        else if(code == "password") {
+            taskParams.password = param;
+        }
+    }
+
+#else
     while(!safe_get_line(inputStream, line).eof()) {
         parse_message_new_config(line, &code, &param);
 
@@ -104,6 +128,7 @@ void get_task_params(std::string inputFileName) {
 	    cout << "charset: " << taskParams.charset << endl;
         }
     }
+#endif
 }
 
 std::istream& safe_get_line(std::istream& is, std::string& t) {

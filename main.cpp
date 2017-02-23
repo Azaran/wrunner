@@ -23,6 +23,7 @@
  */
 
 #include "main.h"
+#undef NEWCONFIG
 
 using namespace std;
 using std::string;
@@ -200,6 +201,7 @@ int main(int argc, char **argv) {
     cerr << "password - " << taskParams.password << endl;
     cerr << "simulation - " << taskParams.simulation << endl;
     cerr << "charset - " << taskParams.charset << endl;
+    cerr << "generator - " << taskParams.generator << endl;
     cerr << "length - " << taskParams.length << endl << endl;
 
     /**
@@ -309,6 +311,30 @@ int main(int argc, char **argv) {
 	stringstream port;
 	port << s.listeningPort;
 
+#ifndef NEWCONFIG
+        //cerr << "main.cpp " << __LINE__ << endl;
+        char * arg_bin = const_cast<char*>(crackerPath.c_str());
+        char * arg_xmlFile = const_cast<char*>(xmlFile.c_str());
+        
+        std::stringstream ss1, ss2;
+        ss1 << taskParams.from;
+        ss2 << taskParams.to;
+        std::string fromTo = ss1.str() + ":" + ss2.str();
+        char * arg_fromTo = const_cast<char*>(fromTo.c_str());
+        char * arg_password = const_cast<char*>((taskParams.password).c_str());
+        char * arg_charset = const_cast<char*>((taskParams.charset).c_str());
+        char * arg_length = const_cast<char*>((taskParams.length).c_str());
+        char * arg_listeningPort = const_cast<char*>((port.str()).c_str());
+        char * arg_openclConfig1 = const_cast<char*>(openclConfig1.c_str());
+        char * arg_openclConfig2 = const_cast<char*>(openclConfig2.c_str());
+        //cerr << "main.cpp " << __LINE__ << endl;
+        
+        //"-v", 
+        static char *argsN[] = {arg_bin, "-m", "BOINC", "-i", arg_xmlFile, "--mport", arg_listeningPort, "-c", arg_charset, "--index", arg_fromTo, "-l", arg_length/*, "-o", arg_openclConfig1, arg_openclConfig2*/, NULL};
+        static char *argsV[] = {arg_bin, "-m", "BOINC", "-i", arg_xmlFile, "--mport", arg_listeningPort, "-c", arg_charset, "-g", "SINGLEPASS", "--pw64", arg_password/*, "-o", arg_openclConfig1, arg_openclConfig2*/, NULL};
+        static char *argsB[] = {arg_bin, "-m", "BOINC", "-i", arg_xmlFile, "--mport", arg_listeningPort, "-c", arg_charset, "-b", "-l", arg_length/*, "-o", arg_openclConfig1, arg_openclConfig2*/, NULL};
+
+#else
 	/**
 	 * @brief  Sets what tool should we run and with what parameters
 	 */
@@ -339,11 +365,11 @@ int main(int argc, char **argv) {
 	char * arg_openclConfig2 = const_cast<char*>(openclConfig2.c_str());
 	char * arg_generator = const_cast<char*>(taskParams.generator.c_str());
 	//cerr << "main.cpp " << __LINE__ << endl;
-
 	//"-v", 
 	static char *argsN[] = {arg_bin, "-m", "BOINC", "-g", arg_generator, "-i", arg_xmlFile, "--mport", arg_listeningPort, "-c", arg_charset, "--index", arg_fromTo, "-l", arg_length, "-o", arg_openclConfig1, arg_openclConfig2, NULL};
 	static char *argsV[] = {arg_bin, "-m", "BOINC", "-g", arg_generator, "-i", arg_xmlFile, "--mport", arg_listeningPort, "-c", arg_charset, "-g", "SINGLEPASS", "--pw64", arg_password, "-o", arg_openclConfig1, arg_openclConfig2, NULL};
 	static char *argsB[] = {arg_bin, "-m", "BOINC", "-g", arg_generator, "-i", arg_xmlFile, "--mport", arg_listeningPort, "-c", arg_charset, "-b", "-l", arg_length, "-o", arg_openclConfig1, arg_openclConfig2, NULL};
+#endif
 
 	close(pipefd[0]);    // close reading end in the child
 	dup2(pipefd[1], 1);  // send stdout to the pipe
@@ -358,14 +384,20 @@ int main(int argc, char **argv) {
 	int result = 0;
 	if(taskParams.mode == 'n') {
 	    print_secondary_process_params(argsN);
+	    cerr << "Fitcrack running with: " << endl;
+	    cerr << argsN << endl << endl;
 	    execv(crackerPath.c_str(), argsN);
 	}
 	else if(taskParams.mode == 'v') {
 	    print_secondary_process_params(argsV);
+	    cerr << "Fitcrack running with: " << endl;
+	    cerr << argsN << endl << endl;
 	    execv(crackerPath.c_str(), argsV);
 	}
 	else if(taskParams.mode == 'b') {
 	    print_secondary_process_params(argsB);
+	    cerr << "Fitcrack running with: " << endl;
+	    cerr << argsN << endl << endl;
 	    result = execv(crackerPath.c_str(), argsB);
 	}
 
