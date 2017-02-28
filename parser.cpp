@@ -24,6 +24,9 @@
 
 #include "parser.h"
 
+#define NEWCONFIG
+
+
 using namespace std;
 using std::string;
 
