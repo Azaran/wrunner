@@ -32,7 +32,7 @@ using boost::asio::ip::tcp;
 bool boinc = false;
 
 string find_exec_file(string path) {
-    //cerr << "main.cpp " << __LINE__ << " find_exec_file(begin) -" << endl;
+    cerr << "main.cpp " << __LINE__ << " find_exec_file(begin) -" << endl;
     string crackerPath = PATH_TO_CRACKER;
     string file;
     DIR *dir = opendir(path.c_str()); 
@@ -43,14 +43,16 @@ string find_exec_file(string path) {
 	{
 	    file = ent->d_name;
 	    if(file != FILE_SEARCH_KEY && file.find(FILE_SEARCH_KEY) != string::npos) {
+		cerr << "main.cpp " << __LINE__ << " find_exec_file() -" << crackerPath << endl;
 		if(boost::lexical_cast<int>(file.substr(8, file.length() - 8)) - \
 			boost::lexical_cast<int>(crackerPath.substr(8, crackerPath.length() - 8)) > 0) {
 		    crackerPath = file;
 		}
+		cerr << "main.cpp " << __LINE__ << " find_exec_file() -" << crackerPath << endl;
 	    }
 	} 
     }
-    //cerr << "main.cpp " << __LINE__ << " find_exec_file() -" << crackerPath << endl;
+    cerr << "main.cpp " << __LINE__ << " find_exec_file() -" << crackerPath << endl;
     return crackerPath;
 }
 
@@ -186,7 +188,7 @@ int main(int argc, char **argv) {
     /**
      * @brief   Read information from files sent by server about task
      */
-    //cerr << "main.cpp " << __LINE__ << endl;
+    cerr << "main.cpp " << __LINE__ << endl;
     if(boinc) {
 	//cerr << "main.cpp " << __LINE__ << endl;
 	get_task_params(resolve_input_file("in"));
@@ -217,9 +219,9 @@ int main(int argc, char **argv) {
 	return 0;
     }
 
-    //cerr << "main.cpp " << __LINE__ << endl;
+    cerr << "main.cpp " << __LINE__ << endl;
     Server s(gioService);
-    //cerr << "main.cpp " << __LINE__ << endl;
+    cerr << "main.cpp " << __LINE__ << endl;
     cerr << "Port " << s.listeningPort << endl;
 
     /**
@@ -312,7 +314,7 @@ int main(int argc, char **argv) {
 	port << s.listeningPort;
 
 #ifndef NEWCONFIG
-        //cerr << "main.cpp " << __LINE__ << endl;
+        cerr << "main.cpp " << __LINE__ << endl;
         char * arg_bin = const_cast<char*>(crackerPath.c_str());
         char * arg_xmlFile = const_cast<char*>(xmlFile.c_str());
         
@@ -327,7 +329,7 @@ int main(int argc, char **argv) {
         char * arg_listeningPort = const_cast<char*>((port.str()).c_str());
         char * arg_openclConfig1 = const_cast<char*>(openclConfig1.c_str());
         char * arg_openclConfig2 = const_cast<char*>(openclConfig2.c_str());
-        //cerr << "main.cpp " << __LINE__ << endl;
+        cerr << "main.cpp " << __LINE__ << endl;
         
         //"-v", 
         static char *argsN[] = {arg_bin, "-m", "BOINC", "-i", arg_xmlFile, "--mport", arg_listeningPort, "-c", arg_charset, "--index", arg_fromTo, "-l", arg_length/*, "-o", arg_openclConfig1, arg_openclConfig2*/, NULL};
@@ -380,7 +382,7 @@ int main(int argc, char **argv) {
 	/**
 	 * @brief  Prints parameters and name of the binary file which we want to execute
 	 */
-	//cerr << "main.cpp " << __LINE__ << endl;
+	cerr << "main.cpp " << __LINE__ << endl;
 	int result = 0;
 	if(taskParams.mode == 'n') {
 	    print_secondary_process_params(argsN);
@@ -427,7 +429,7 @@ int main(int argc, char **argv) {
 	char out_buffer;
 	close(pipefd[1]); 
 
-	//cerr << "PID: " <<  pid << endl;
+	cerr << "PID: " <<  pid << endl;
 	//cerr << "main.cpp:" << __LINE__ << endl;
 	s.start_accept();
 
@@ -435,13 +437,13 @@ int main(int argc, char **argv) {
 	//cerr << "main.cpp:" << __LINE__ << endl;
 	//fprintf(stderr, "main.cpp:%d\n", __LINE__);
 
-	//cerr << "main.cpp:" << __LINE__ << endl;
+	cerr << "main.cpp:" << __LINE__ << endl;
 
 	while (read(pipefd[0], &out_buffer, 1) != 0)
 	{
 	    programOutput += out_buffer;
 	}
-	//cerr << "main.cpp:" << __LINE__ << endl;
+	cerr << "main.cpp:" << __LINE__ << endl;
 	cerr << programOutput << endl;
     }
     // end of else    

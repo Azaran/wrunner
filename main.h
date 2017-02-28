@@ -59,7 +59,7 @@
 #include "standalone.h"
 
 #define PATH_TO_OCLCONFIG "../../opencl.config"
-#define PATH_TO_CRACKER "../fitcrack_src_0_2_120/bin/fitcrack"
+#define PATH_TO_CRACKER "fitcrack0"
 #define FILE_SEARCH_KEY "fitcrack"
 #define KERNELS_ARCHIVE "kernels6.zip"
 

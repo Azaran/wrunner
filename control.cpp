@@ -4,7 +4,7 @@ using namespace std;
 using std::string;
 
 pid_t pid = 0;
-boost::asio::io_service& gioService;
+boost::asio::io_service gioService;
 
 int counter = -1;
 int lastPause;
