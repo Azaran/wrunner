@@ -338,7 +338,7 @@ std::string parse_charset_xml(std::string message) {
 }
 
 void control_read(string message) {
-    cerr << "control.cpp:" << __LINE__ << " " << message << endl;
+    //cerr << "control.cpp:" << __LINE__ << " " << message << endl;
 
     //cerr << "<message: " << message << "(" << message.length() << ")" << endl;
     //cout << "< " << message << "(" << message.length() << ")" << endl;
@@ -357,9 +357,9 @@ void control_read(string message) {
         lastHeartbeat = counter;
     }
     else if(part1 == "status") {
-        //cerr << "control.cpp" << __LINE__ << endl;
+        cerr << "control.cpp" << __LINE__ << endl;
         float done = stof(part2);
-        //cerr << "control.cpp" << __LINE__ << endl;
+        cerr << "control.cpp" << __LINE__ << endl;
         
         if(done > lastBoincFractionDone) {
             //cerr << "control.cpp" << __LINE__ << endl;
@@ -369,8 +369,9 @@ void control_read(string message) {
         }
     }
     else if(part1 == "code") {
-        //cerr << "control.cpp" << __LINE__ << endl;
+        cerr << "control.cpp" << __LINE__ << endl;
         unsigned int code = boost::lexical_cast<int>(part2);
+        cerr << "control.cpp" << __LINE__ << endl;
         errorText = "";
         switch(code) {
             case 0:
@@ -390,18 +391,21 @@ void control_read(string message) {
         }
     }
     else if(part1 == "speed") {
-        //cerr << "control.cpp" << __LINE__ << endl;
+        cerr << "control.cpp" << __LINE__ << endl;
         avgSpeed = boost::lexical_cast<unsigned long long int>(part2);
+        cerr << "control.cpp" << __LINE__ << endl;
         //create_output_file("", false, "");
     }
     else if(part1 == "pwcount") {
-        //cerr << "control.cpp" << __LINE__ << endl;
+        cerr << "control.cpp" << __LINE__ << endl;
         pwcount = boost::lexical_cast<unsigned long long int>(part2);
+        cerr << "control.cpp" << __LINE__ << endl;
         //create_output_file("", false, "");
     }
     else if(part1 == "totalTime") {
-        //cerr << "control.cpp" << __LINE__ << endl;
+        cerr << "control.cpp" << __LINE__ << endl;
         totalTime = boost::lexical_cast<double>(part2);
+        cerr << "control.cpp" << __LINE__ << endl;
         //create_output_file("", false, "");
     }
 }

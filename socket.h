@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
+#include <stdexcept>
 
 #include "boinc_api.h"
 #include <boost/bind.hpp>

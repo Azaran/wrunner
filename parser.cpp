@@ -51,6 +51,12 @@ void get_task_params(std::string inputFileName) {
     string line, code, param;
     std::ifstream inputStream(inputFileName);
  
+    cerr << "parser.cpp" << __LINE__ << endl;
+    cerr << "In file start #####################" << endl;
+    cerr << inputStream.rdbuf();
+    cerr << "In file end #######################" << endl;
+    inputStream.clear();                 // clear fail and eof bits
+    inputStream.seekg(0, ios::beg); // back to the start!
     /**
      * @brief   Safely parse input file and save content into the structure.
      */

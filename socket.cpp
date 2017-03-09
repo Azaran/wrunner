@@ -11,6 +11,32 @@ boost::asio::deadline_timer * gTimer;
 std::vector<class Session *> sessions;
 unsigned int secondsElapsed = 0;
 
+void debug_print(string message, string msgName) {
+    cerr << "socket.cpp:" << __LINE__ << " " << msgName << " with esc: ";
+    for (string::iterator i = message.begin(); i != message.end(); ++i){
+	switch (*i)
+	{
+	    case '\0':
+		cerr << "\\0";
+		break;
+	    case '\n':
+		cerr << "\\n";
+		break;
+	    case '\r':
+		cerr << "\\r";
+		break;
+		/* Etc. */
+
+	    default:
+		if (isprint(*i))
+		    fprintf(stderr, "%c", *i);  /* Printable character, print it as usual */
+		else
+		    fprintf(stderr, "\\x%02x", *i); /* Non-printable character, print as hex value */
+		break;
+	}
+    }
+    cerr << endl;
+}
 /** class Session */
 Session::Session(io_service& ioService, unsigned short sessionIndex) : socket_(ioService) {
     //cerr << "socket.cpp:" << __LINE__ << endl;
@@ -90,19 +116,26 @@ void Session::handle_read(const boost::system::error_code& error, size_t bytesTr
         //cerr << "socket.cpp:" << __LINE__ << " " << bytesTransfered << endl;
         remains.append(dataIn, bytesTransfered);
         //cerr << "socket.cpp:" << __LINE__ << " " << dataIn << endl;
-        //cerr << "socket.cpp:" << __LINE__ << " " << remains << endl;
-        
+        cerr << "socket.cpp:" << __LINE__ << " remains: " << remains << endl;
+	debug_print(remains, "remains");
         int index = remains.find('\n');
-        //cerr << "socket.cpp:" << __LINE__ << " " << index << endl;
+        cerr << "socket.cpp:" << __LINE__ << " index of '\\n': " << index << endl;
         while(index < string::npos) {
             //cerr << "socket.cpp:" << __LINE__ << endl;
             message = remains.substr(0, index);
-            //cerr << "socket.cpp:" << __LINE__ << " " << message << endl;
-            if(message.at(message.length() - 1) == '\r')
-                message = remains.substr(0, message.length() - 1);
-            remains = remains.substr(index + 1, remains.length() - (index + 1));
+	    try {
+		if(message.at(message.length() - 1) == '\r')
+		    message = remains.substr(0, message.length() - 1);
+	    } catch (const std::out_of_range& oor) {
+		cerr << "socket.cpp:" << __LINE__ << " message: " << message << endl;
+		debug_print(message, "message");
+		std::cerr << "socket.cpp: " << __LINE__ << endl;
+		std::cerr << "caught: Out of Range => message.length()-1 = " << message.length()-1 << endl;
+		std::cerr << "exception: " << oor.what() << endl;
+	    }
+	    remains = remains.substr(index + 1, remains.length() - (index + 1));
             
-            //cerr << "socket.cpp:" << __LINE__ << " " << message << endl;
+            cerr << "socket.cpp:" << __LINE__ << " " << message << endl;
             control_read(message);
             index = remains.find('\n');
         }
