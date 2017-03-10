@@ -419,11 +419,9 @@ void prepare_args(std::vector<char*>& vArgs, string crackerPath, string port, st
 	vArgs.push_back("-g");
 
 	if (taskParams.mode != 'v') {
-	    vArgs.push_back("-l");
-	    vArgs.push_back(const_cast<char*>(plen.c_str()));
+	    vArgs.push_back(const_cast<char*>((taskParams.generator).c_str()));
 
 	    if(taskParams.mode != 'b'){
-		vArgs.push_back(const_cast<char*>((taskParams.generator).c_str()));
 		vArgs.push_back("-b");
 	    } else { // mode == 'n'
 		vArgs.push_back("--index");
@@ -442,6 +440,8 @@ void prepare_args(std::vector<char*>& vArgs, string crackerPath, string port, st
 	} else {
 	    vArgs.push_back("-c");
 	    vArgs.push_back(const_cast<char*>((taskParams.charset).c_str()));
+	    vArgs.push_back("-l");
+	    vArgs.push_back(const_cast<char*>(plen.c_str()));
 	}
 	
 	if (taskParams.enable_ocl) {
