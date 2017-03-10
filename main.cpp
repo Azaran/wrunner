@@ -55,13 +55,10 @@ string find_exec_file(string path) {
     return crackerPath;
 }
 
-void print_secondary_process_params(char ** args) {
-    int i = 0;
+void print_secondary_process_params(std::vector<char*> args) {
     cerr << "./";
-    while(args[i] != NULL) {
-	cerr << args[i] << " ";
-	i++;
-    }
+    for (std::vector<char*>::iterator i = args.begin(); i != args.end(); i++)
+	cerr << *i << " ";
     cerr << endl;
 }
 
@@ -312,64 +309,12 @@ int main(int argc, char **argv) {
 	stringstream port;
 	port << s.listeningPort;
 
-#ifndef NEWCONFIG
-        cerr << "main.cpp " << __LINE__ << endl;
-        char * arg_bin = const_cast<char*>(crackerPath.c_str());
-        char * arg_xmlFile = const_cast<char*>(xmlFile.c_str());
-        
-        std::stringstream ss1, ss2;
-        ss1 << taskParams.from;
-        ss2 << taskParams.to;
-        std::string fromTo = ss1.str() + ":" + ss2.str();
-        char * arg_fromTo = const_cast<char*>(fromTo.c_str());
-        char * arg_password = const_cast<char*>((taskParams.password).c_str());
-        char * arg_charset = const_cast<char*>((taskParams.charset).c_str());
-        char * arg_length = const_cast<char*>((taskParams.length).c_str());
-        char * arg_listeningPort = const_cast<char*>((port.str()).c_str());
-        char * arg_openclConfig1 = const_cast<char*>(openclConfig1.c_str());
-        char * arg_openclConfig2 = const_cast<char*>(openclConfig2.c_str());
-        cerr << "main.cpp " << __LINE__ << endl;
-        
-        //"-v", 
-        static char *argsN[] = {arg_bin, "-m", "BOINC", "-i", arg_xmlFile, "--mport", arg_listeningPort, "-c", arg_charset, "--index", arg_fromTo, "-l", arg_length/*, "-o", arg_openclConfig1, arg_openclConfig2*/, NULL};
-        static char *argsV[] = {arg_bin, "-m", "BOINC", "-i", arg_xmlFile, "--mport", arg_listeningPort, "-c", arg_charset, "-g", "SINGLEPASS", "--pw64", arg_password/*, "-o", arg_openclConfig1, arg_openclConfig2*/, NULL};
-        static char *argsB[] = {arg_bin, "-m", "BOINC", "-i", arg_xmlFile, "--mport", arg_listeningPort, "-c", arg_charset, "-b", "-l", arg_length/*, "-o", arg_openclConfig1, arg_openclConfig2*/, NULL};
-
-#else
 	/**
 	 * @brief  Sets what tool should we run and with what parameters
 	 */
 	cerr << "main.cpp " << __LINE__ << endl;
-	char * arg_bin = const_cast<char*>(crackerPath.c_str());
-	char * arg_xmlFile = const_cast<char*>(xmlFile.c_str());
-
-	stringstream ss1, ss2;
-
-	ss1 << taskParams.from;
-	ss2 << taskParams.to;
-	string fromTo = ss1.str() + ":" + ss2.str();
-
-	ss1.clear();
-	ss2.clear();
-
-	ss1 << taskParams.from;
-	ss2 << taskParams.to;
-	string plen = ss1.str() + ":" + ss2.str();
-
-	char * arg_fromTo = const_cast<char*>(fromTo.c_str());
-	char * arg_password = const_cast<char*>((taskParams.password).c_str());
-	char * arg_charset = const_cast<char*>((taskParams.charset).c_str());
-	char * arg_length = const_cast<char*>((plen).c_str());
-	char * arg_listeningPort = const_cast<char*>((port.str()).c_str());
-	char * arg_openclConfig1 = const_cast<char*>(openclConfig1.c_str());
-	char * arg_openclConfig2 = const_cast<char*>(openclConfig2.c_str());
-	char * arg_generator = const_cast<char*>(taskParams.generator.c_str());
-	//cerr << "main.cpp " << __LINE__ << endl;
-	//"-v", 
-	static char *argsN[] = {arg_bin, "-m", "BOINC", "-g", arg_generator, "-i", arg_xmlFile, "--mport", arg_listeningPort, "-c", arg_charset, "--index", arg_fromTo, "-l", arg_length, /* "-o", arg_openclConfig1, arg_openclConfig2,*/ NULL};
-	static char *argsV[] = {arg_bin, "-m", "BOINC", "-g", arg_generator, "-i", arg_xmlFile, "--mport", arg_listeningPort, "-c", arg_charset, "-g", "SINGLEPASS", "--pw64", arg_password, /* "-o", arg_openclConfig1, arg_openclConfig2,*/ NULL};
-	static char *argsB[] = {arg_bin, "-m", "BOINC", "-g", arg_generator, "-i", arg_xmlFile, "--mport", arg_listeningPort, "-c", arg_charset, "-b", "-l", arg_length, /*"-o", arg_openclConfig1, arg_openclConfig2,*/ NULL};
-#endif
+	std::vector<char*> args;
+	prepare_args(args, crackerPath, port.str(), openclConfig1, openclConfig2, xmlFile);
 
 	close(pipefd[0]);    // close reading end in the child
 	dup2(pipefd[1], 1);  // send stdout to the pipe
@@ -382,27 +327,12 @@ int main(int argc, char **argv) {
 	 */
 	cerr << "main.cpp " << __LINE__ << endl;
 	int result = 0;
-	if(taskParams.mode == 'n') {
-	    print_secondary_process_params(argsN);
-	    cerr << "Fitcrack running with: " << endl;
-	    cerr << argsN << endl << endl;
-	    execv(crackerPath.c_str(), argsN);
-	}
-	else if(taskParams.mode == 'v') {
-	    print_secondary_process_params(argsV);
-	    cerr << "Fitcrack running with: " << endl;
-	    cerr << argsN << endl << endl;
-	    execv(crackerPath.c_str(), argsV);
-	}
-	else if(taskParams.mode == 'b') {
-	    print_secondary_process_params(argsB);
-	    cerr << "Fitcrack running with: " << endl;
-	    cerr << argsN << endl << endl;
-	    result = execv(crackerPath.c_str(), argsB);
-	}
+	cerr << "Fitcrack running as: " << endl;
+	print_secondary_process_params(args);
+	execv(args[0], &args[1]);
 
 	/**
-	 * @brief   On mode 'b' we test result and if cracking tool ended with
+	 * @brief   We test result and if cracking tool ended with
 	 *	    error we redirect is STDERR to client's 
 	 */
 	if( result != 0 )
@@ -461,6 +391,66 @@ int main(int argc, char **argv) {
     //cerr << "main.cpp:" << __LINE__ << endl;
 }
 
+void prepare_args(std::vector<char*>& vArgs, string crackerPath, string port, string openclConfig1, string openclConfig2, string xmlFile) {
+
+	stringstream ss1, ss2;
+
+	ss1 << taskParams.from;
+	ss2 << taskParams.to;
+	string fromTo = ss1.str() + ":" + ss2.str();
+
+	ss1.clear();
+	ss2.clear();
+
+	ss1 << taskParams.passlen_min;
+	ss2 << taskParams.passlen_max;
+	string plen = ss1.str() + ":" + ss2.str();
+
+	// common part of args for all modes
+	// it is this ugly coz no c++11
+
+	vArgs.push_back(const_cast<char*>(crackerPath.c_str()));
+	vArgs.push_back("-m");
+	vArgs.push_back("BOINC");
+	vArgs.push_back("-i");
+	vArgs.push_back(const_cast<char*>(xmlFile.c_str()));
+	vArgs.push_back("--mport");
+	vArgs.push_back(const_cast<char*>(port.c_str()));
+	vArgs.push_back("-g");
+
+	if (taskParams.mode != 'v') {
+	    vArgs.push_back("-l");
+	    vArgs.push_back(const_cast<char*>(plen.c_str()));
+
+	    if(taskParams.mode != 'b'){
+		vArgs.push_back(const_cast<char*>((taskParams.generator).c_str()));
+		vArgs.push_back("-b");
+	    } else { // mode == 'n'
+		vArgs.push_back("--index");
+		vArgs.push_back(const_cast<char*>(fromTo.c_str()));
+	    }
+
+	} else {
+	    vArgs.push_back("SINGLEPASS");
+	    vArgs.push_back("--pw64");
+	    vArgs.push_back(const_cast<char*>((taskParams.password).c_str()));
+	}
+
+	if (taskParams.generator == "DICT"){
+	    vArgs.push_back("-d");
+	    vArgs.push_back("dict");
+	} else {
+	    vArgs.push_back("-c");
+	    vArgs.push_back(const_cast<char*>((taskParams.charset).c_str()));
+	}
+	
+	if (taskParams.enable_ocl) {
+	    vArgs.push_back("-o");
+	    vArgs.push_back(const_cast<char*>(openclConfig1.c_str()));
+	    vArgs.push_back(const_cast<char*>(openclConfig2.c_str()));
+	}
+	vArgs.push_back(0);
+}
 
 #ifdef __WIN32
 PROCESS_INFORMATION CreateChildProcess(string procName){

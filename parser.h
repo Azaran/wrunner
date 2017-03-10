@@ -32,6 +32,9 @@
 #include "control.h"
 #include "encoding.h"
 
+#define CHARSET_XML_PATH "charset.xml"
+#define DICTIONARY_NAME "dict"
+
 /**
  * @brief   Holds information about task.
  */
@@ -51,6 +54,7 @@ typedef struct taskParams{
     bool enable_cuda;
     int passlen_min;
     int passlen_max;
+    std::string dictionary;
 } TTaskParams;
 
 extern TTaskParams taskParams;

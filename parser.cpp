@@ -24,9 +24,6 @@
 
 #include "parser.h"
 
-#define NEWCONFIG
-
-
 using namespace std;
 using std::string;
 
@@ -44,6 +41,7 @@ void params_init() {
     taskParams.enable_ocl = false;
     taskParams.enable_cuda = false;
     taskParams.name = "";
+    taskParams.dictionary = DICTIONARY_NAME;
 }
 
 void get_task_params(std::string inputFileName) {
@@ -60,30 +58,6 @@ void get_task_params(std::string inputFileName) {
     /**
      * @brief   Safely parse input file and save content into the structure.
      */
-#ifndef NEWCONFIG
-    while(!safe_get_line(inputStream, line).eof()) {
-        parse_message_simple(line, &code, &param);
-        if(code == "mode") {
-            taskParams.mode = param.c_str()[0];
-        }
-        else if(code == "charset") {
-            taskParams.charset = param;
-        }
-        else if(code == "passLength") {
-            taskParams.length = param;
-        }
-        else if(code == "from") {
-            taskParams.from = boost::lexical_cast<unsigned long long int>(param);
-        }
-        else if(code == "count") {
-            taskParams.to = taskParams.from + boost::lexical_cast<unsigned long long int>(param);
-        }
-        else if(code == "password") {
-            taskParams.password = param;
-        }
-    }
-
-#else
     while(!safe_get_line(inputStream, line).eof()) {
         parse_message_new_config(line, &code, &param);
 
@@ -110,6 +84,8 @@ void get_task_params(std::string inputFileName) {
         else if(code == "generator") {
             taskParams.generator = param;
 	    cout << "generator: " << taskParams.generator << endl;
+	    if (taskParams.generator == "DICT")
+		taskParams.dictionary = DICTIONARY_NAME;
         }
         else if(code == "enable_opencl") {
 	    taskParams.enable_ocl = boost::lexical_cast<bool>(param);
@@ -130,14 +106,13 @@ void get_task_params(std::string inputFileName) {
         }
         else if(code == "charset_xml") {
 	    ofstream charsetFile;
-	    charsetFile.open("charset.xml", ios::trunc);
+	    charsetFile.open(CHARSET_XML_PATH, ios::trunc);
 	    charsetFile << decode64(param);
 	    charsetFile.close(); 
-	    taskParams.charset = "charset.xml";
+	    taskParams.charset = CHARSET_XML_PATH;
 	    cout << "charset: " << taskParams.charset << endl;
         }
     }
-#endif
 }
 
 std::istream& safe_get_line(std::istream& is, std::string& t) {

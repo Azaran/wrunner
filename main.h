@@ -31,6 +31,7 @@
 #include <unistd.h>
 #include <fstream>
 #include <string>
+#include <vector>
 
 #ifdef __WIN32
 #include <windows.h>
@@ -74,7 +75,7 @@ std::string find_exec_file(std::string path);
  * @brief   Prints parameters of with which is the child run
  * @param args
  */
-void print_secondary_process_params(char ** args);
+void print_secondary_process_params(std::vector<char*> args);
 
 /**
  * @brief   Creates new directory with privileges 0755 (safely)
@@ -105,6 +106,17 @@ inline bool file_exists (const std::string& name);
  * @return  0
  */
 int main(int argc, char **argv);
+
+/**
+ * @brief   Prepares vector with args for fitcrack based on recieved config.
+ * @param vArgs
+ * @param crackerPath
+ * @param port
+ * @param openclConfig1
+ * @param openclConfig2
+ * @param xmlFile
+ */
+void prepare_args(std::vector<char*>& vArgs, std::string crackerPath, std::string port, std::string openclConfig1, std::string openclConfig2, std::string xmlFile) ;
 
 #ifdef __WIN32 // WINDOWS --------------------------------------
 // TODO: I guess this isnt' right is it?
