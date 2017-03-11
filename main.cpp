@@ -327,9 +327,12 @@ int main(int argc, char **argv) {
 	 */
 	cerr << "main.cpp " << __LINE__ << endl;
 	int result = 0;
-	cerr << "Fitcrack running as: " << endl;
 	print_secondary_process_params(args);
-	execv(args[0], &args[1]);
+	cerr << "Fitcrack running with params: " << endl;
+	for (int i = 1; i < args.size(); i++)
+	    cerr << args[i] << " ";
+	cerr << endl;
+	execv(args[0], &args[0]);
 
 	/**
 	 * @brief   We test result and if cracking tool ended with
@@ -402,9 +405,11 @@ void prepare_args(std::vector<char*>& vArgs, string crackerPath, string port, st
 	ss1.clear();
 	ss2.clear();
 
-	ss1 << taskParams.passlen_min;
-	ss2 << taskParams.passlen_max;
-	string plen = ss1.str() + ":" + ss2.str();
+	stringstream ss3, ss4;
+
+	ss3 << taskParams.passlen_min;
+	ss4 << taskParams.passlen_max;
+	string plen = ss3.str() + ":" + ss4.str();
 
 	// common part of args for all modes
 	// it is this ugly coz no c++11
@@ -412,29 +417,30 @@ void prepare_args(std::vector<char*>& vArgs, string crackerPath, string port, st
 	vArgs.push_back(const_cast<char*>(crackerPath.c_str()));
 	vArgs.push_back("-m");
 	vArgs.push_back("BOINC");
-	vArgs.push_back("-i");
-	vArgs.push_back(const_cast<char*>(xmlFile.c_str()));
 	vArgs.push_back("--mport");
 	vArgs.push_back(const_cast<char*>(port.c_str()));
-	vArgs.push_back("-g");
+	vArgs.push_back("-i");
+	vArgs.push_back(const_cast<char*>(xmlFile.c_str()));
 
 	if (taskParams.mode != 'v') {
-	    vArgs.push_back(const_cast<char*>((taskParams.generator).c_str()));
 
-	    if(taskParams.mode != 'b'){
+	    if(taskParams.mode == 'b'){
 		vArgs.push_back("-b");
 	    } else { // mode == 'n'
+		vArgs.push_back("-g");
+		vArgs.push_back(const_cast<char*>((taskParams.generator).c_str()));
 		vArgs.push_back("--index");
 		vArgs.push_back(const_cast<char*>(fromTo.c_str()));
 	    }
 
 	} else {
+	    vArgs.push_back("-g");
 	    vArgs.push_back("SINGLEPASS");
 	    vArgs.push_back("--pw64");
 	    vArgs.push_back(const_cast<char*>((taskParams.password).c_str()));
 	}
 
-	if (taskParams.generator == "DICT"){
+	if (taskParams.generator == "DICT" && taskParams.mode != 'b'){
 	    vArgs.push_back("-d");
 	    vArgs.push_back("dict");
 	} else {
@@ -442,6 +448,7 @@ void prepare_args(std::vector<char*>& vArgs, string crackerPath, string port, st
 	    vArgs.push_back(const_cast<char*>((taskParams.charset).c_str()));
 	    vArgs.push_back("-l");
 	    vArgs.push_back(const_cast<char*>(plen.c_str()));
+	    cerr << "plen: " << plen << endl;
 	}
 	
 	if (taskParams.enable_ocl) {
@@ -449,7 +456,14 @@ void prepare_args(std::vector<char*>& vArgs, string crackerPath, string port, st
 	    vArgs.push_back(const_cast<char*>(openclConfig1.c_str()));
 	    vArgs.push_back(const_cast<char*>(openclConfig2.c_str()));
 	}
-	vArgs.push_back(0);
+	vArgs.push_back(NULL);
+// 
+// -m BOINC --mport 40403 -i
+// ../../projects/wrathion.fit.vutbr.cz_icdf2c/icdf2c_1489150971_49 -b -c
+// charset.xml -l 1:10
+
+//-m BOINC -i ../../projects/wrathion.fit.vutbr.cz_icdf2c/icdf2c_1488965051_79
+//--mport 43923 -c charset.xml -b -l 1:10
 }
 
 #ifdef __WIN32
