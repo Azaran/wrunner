@@ -63,45 +63,45 @@ void get_task_params(std::string inputFileName) {
 
         if(code == "name") {
             taskParams.name = param.c_str()[0];
-	    cout << "name: " << taskParams.name << endl;
+	    cerr << "name: " << taskParams.name << endl;
         }
         else if(code == "mode") {
             taskParams.mode = param.c_str()[0];
-	    cout << "mode: " << taskParams.mode << endl;
+	    cerr << "mode: " << taskParams.mode << endl;
         }
         else if(code == "from") {
             taskParams.from = boost::lexical_cast<unsigned long long int>(param);
-	    cout << "from: " << taskParams.from << endl;
+	    cerr << "from: " << taskParams.from << endl;
         }
         else if(code == "count") {
             taskParams.to = taskParams.from + boost::lexical_cast<unsigned long long int>(param);
-	    cout << "count: " << taskParams.to << endl;
+	    cerr << "count: " << taskParams.to << endl;
         }
         else if(code == "password") {
             taskParams.password = param;
-	    cout << "password: " << taskParams.password << endl;
+	    cerr << "password: " << taskParams.password << endl;
         }
         else if(code == "generator") {
             taskParams.generator = param;
-	    cout << "generator: " << taskParams.generator << endl;
+	    cerr << "generator: " << taskParams.generator << endl;
 	    if (taskParams.generator == "DICT")
 		taskParams.dictionary = DICTIONARY_NAME;
         }
         else if(code == "enable_opencl") {
 	    taskParams.enable_ocl = boost::lexical_cast<bool>(param);
-	    cout << "enable_opencl: " << taskParams.enable_ocl << endl;
+	    cerr << "enable_opencl: " << taskParams.enable_ocl << endl;
         }
         else if(code == "enable_cuda") {
             taskParams.enable_cuda = boost::lexical_cast<bool>(param);
-	    cout << "enable_cuda: " << taskParams.enable_cuda << endl;
+	    cerr << "enable_cuda: " << taskParams.enable_cuda << endl;
         }
         else if(code == "passlen_min") {
             taskParams.passlen_min = boost::lexical_cast<int>(param);
-	    cout << "passlen_min: " << taskParams.passlen_min << endl;
+	    cerr << "passlen_min: " << taskParams.passlen_min << endl;
         }
         else if(code == "passlen_max") {
             taskParams.passlen_max = boost::lexical_cast<int>(param);
-	    cout << "passlen_max: " << taskParams.passlen_max << endl;
+	    cerr << "passlen_max: " << taskParams.passlen_max << endl;
 	    taskParams.length = to_string(taskParams.passlen_min) + ":" + to_string(taskParams.passlen_max);
         }
         else if(code == "charset_xml") {
@@ -110,7 +110,7 @@ void get_task_params(std::string inputFileName) {
 	    charsetFile << decode64(param);
 	    charsetFile.close(); 
 	    taskParams.charset = CHARSET_XML_PATH;
-	    cout << "charset: " << taskParams.charset << endl;
+	    cerr << "charset: " << taskParams.charset << endl;
         }
     }
 }
