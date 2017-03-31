@@ -85,6 +85,8 @@ void Session::send_line(class Session * session, string message) {
     cerr << "socket.cpp:" << __LINE__ << endl;
     if(message.length() == 0 || message.at(message.length()-1) != '\n')
         message += '\n';
+    cerr << "send message: " << message << endl;
+    debug_print(message, "send message");
     cerr << "socket.cpp:" << __LINE__ << endl;
     async_write(*(session->socket2), buffer(message, message.length()), bind(&Session::handle_write, session, boost::asio::placeholders::error));
     //cerr << "socket.cpp:" << __LINE__ << endl;
@@ -132,6 +134,7 @@ void Session::handle_read(const boost::system::error_code& error, size_t bytesTr
 		std::cerr << "socket.cpp: " << __LINE__ << endl;
 		std::cerr << "caught: Out of Range => message.length()-1 = " << message.length()-1 << endl;
 		std::cerr << "exception: " << oor.what() << endl;
+		throw oor;
 	    }
 	    remains = remains.substr(index + 1, remains.length() - (index + 1));
             

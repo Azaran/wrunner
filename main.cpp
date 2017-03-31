@@ -43,8 +43,12 @@ string find_exec_file(string path) {
 	    file = ent->d_name;
 	    if(file != FILE_SEARCH_KEY && file.find(FILE_SEARCH_KEY) != string::npos) {
 		cerr << "main.cpp " << __LINE__ << " find_exec_file() -" << crackerPath << endl;
-		if(boost::lexical_cast<int>(file.substr(8, file.length() - 8)) - \
-			boost::lexical_cast<int>(crackerPath.substr(8, crackerPath.length() - 8)) > 0) {
+	// pure CPU version
+	//	if(boost::lexical_cast<int>(file.substr(8, file.length() - 8)) - \
+			// boost::lexical_cast<int>(crackerPath.substr(8, crackerPath.length() - 8)) > 0) {
+	// OCL verstion
+		if(boost::lexical_cast<int>(file.substr(11, file.length() - 11)) - \
+			boost::lexical_cast<int>(crackerPath.substr(11, crackerPath.length() - 11)) > 0) {
 		    crackerPath = file;
 		}
 		cerr << "main.cpp " << __LINE__ << " find_exec_file() -" << crackerPath << endl;

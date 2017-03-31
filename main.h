@@ -60,9 +60,9 @@
 #include "standalone.h"
 
 #define PATH_TO_OCLCONFIG "../../opencl.config"
-#define PATH_TO_CRACKER "fitcrack0"
-#define FILE_SEARCH_KEY "fitcrack"
-#define KERNELS_ARCHIVE "kernels6.zip"
+#define PATH_TO_CRACKER "fitoclcrack0"
+#define FILE_SEARCH_KEY "fitoclcrack"
+#define KERNELS_ARCHIVE "kernels55.zip"
 
 /**
  * @brief   Find cracking tool's execution file in the directory 
