@@ -403,9 +403,10 @@ void control_read(string message) {
         //create_output_file("", false, "");
     }
     else if(part1 == "totalTime") {
-        cerr << "control.cpp" << __LINE__ << endl;
+        cerr << "control.cpp" << __LINE__ << " totalTime before cast " << totalTime << endl;
         totalTime = boost::lexical_cast<double>(part2);
-        cerr << "control.cpp" << __LINE__ << endl;
+        cerr << "control.cpp" << __LINE__ << " part2 " << part2 << endl;
+        cerr << "control.cpp" << __LINE__ << " totalTime after cast " << totalTime << endl;
         //create_output_file("", false, "");
     }
 }
